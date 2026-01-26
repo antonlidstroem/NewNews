@@ -17,7 +17,7 @@ namespace NewNews.MAUI.ViewModels
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
-        private const int pageSize = 10;
+        private const int pageSize = 5;
 
         public MainViewModel(NewsService newsService)
         {
@@ -59,7 +59,7 @@ namespace NewNews.MAUI.ViewModels
         }
 
         [RelayCommand]
-        private async Task LoadMoreNewsCommand()
+        public async Task LoadMoreNewsCommand()
         {
             await LoadMoreNews(SearchQuery ?? "nyheter");
         }

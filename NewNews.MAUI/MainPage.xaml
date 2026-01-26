@@ -21,15 +21,14 @@
         <CollectionView
             Grid.Row="1"
             ItemsSource="{Binding Articles}"
-            RemainingItemsThreshold="2"
+            RemainingItemsThreshold="0"
             RemainingItemsThresholdReachedCommand="{Binding LoadMoreNewsCommand}"
-            HorizontalOptions="FillAndExpand"
-            VerticalOptions="FillAndExpand"
-            SelectionMode="None">
+            SelectionMode="None"
+            HeightRequest="600">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:News">
-                    <Frame Style="{StaticResource ArticleFrameStyle}">
+                    <Border Style="{StaticResource ArticleFrameStyle}">
                         <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
 
                             <!-- Bild -->
@@ -46,7 +45,7 @@
                        Style="{StaticResource PublishedAtLabelStyle}" />
 
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
