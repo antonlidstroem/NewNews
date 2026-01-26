@@ -18,11 +18,15 @@
         </HorizontalStackLayout>
 
         <!-- Nyhetslista -->
-        <CollectionView Grid.Row="1"
-                ItemsSource="{Binding Articles}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand"
-                SelectionMode="None">
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding Articles}"
+            RemainingItemsThreshold="2"
+            RemainingItemsThresholdReachedCommand="{Binding LoadMoreNewsCommand}"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            SelectionMode="None">
+
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:News">
                     <Frame Style="{StaticResource ArticleFrameStyle}">

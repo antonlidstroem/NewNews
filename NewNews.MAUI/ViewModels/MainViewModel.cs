@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
-using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
@@ -13,8 +12,12 @@ namespace NewNews.MAUI.ViewModels
 
         public ObservableCollection<News> Articles { get; } = new();
 
-        [ObservableProperty]
-        private string? searchQuery;
+        [ObservableProperty] private string? searchQuery;
+        [ObservableProperty] private bool isBusy;
+
+        private bool hasMoreItems = true;
+        private int currentPage = 1;
+        private const int pageSize = 10;
 
         public MainViewModel(NewsService newsService)
         {
@@ -26,11 +29,39 @@ namespace NewNews.MAUI.ViewModels
         private async Task SearchNews()
         {
             Articles.Clear();
+            currentPage = 1;
+            hasMoreItems = true;
 
-            var results = await _newsService.SearchAsync(SearchQuery ?? "");
+            await LoadMoreNews(SearchQuery ?? "nyheter");
+        }
 
-            foreach (var news in results)
-                Articles.Add(news);
+        public async Task LoadMoreNews(string? query = "nyheter")
+        {
+            if (IsBusy || !hasMoreItems) return;
+            IsBusy = true;
+
+            var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query);
+
+            foreach (var item in news)
+                Articles.Add(item);
+
+            if (news.Count == 0)
+            {
+                hasMoreItems = false;
+            }
+            else
+            {
+                currentPage++;
+            }
+
+
+            IsBusy = false;
+        }
+
+        [RelayCommand]
+        private async Task LoadMoreNewsCommand()
+        {
+            await LoadMoreNews(SearchQuery ?? "nyheter");
         }
     }
 }

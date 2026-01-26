@@ -10,5 +10,16 @@ namespace NewNews.MAUI
             InitializeComponent();
             BindingContext = vm;
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (BindingContext is MainViewModel vm)
+            {
+                await vm.LoadMoreNews();
+            }
+        }
+
     }
 }

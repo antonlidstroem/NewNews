@@ -1,6 +1,49 @@
-﻿using NewNews.MAUI.ViewModels;
+﻿//using NewNews.MAUI.ViewModels;
+//using Microsoft.Extensions.Logging;
+//using NewNews.DAL.Services;
+
+//namespace NewNews.MAUI
+//{
+//    public static class MauiProgram
+//    {
+//        public static MauiApp CreateMauiApp()
+//        {
+//            var builder = MauiApp.CreateBuilder();
+//            builder
+//                .UseMauiApp<App>()
+//                .ConfigureFonts(fonts =>
+//                {
+//                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+//                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+//                });
+
+//            builder.Services.AddHttpClient<NewsService>(client =>
+//            {
+//                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
+//            });
+
+//            // Registrera MainViewModel som singleton
+//            builder.Services.AddSingleton<MainViewModel>();
+
+//            builder.Services.AddSingleton<NewsService>();
+//            builder.Services.AddSingleton<MainViewModel>();
+
+
+
+//#if DEBUG
+//            builder.Logging.AddDebug();
+//#endif
+
+//            return builder.Build();
+//        }
+//    }
+//}
+
+
+using NewNews.MAUI.ViewModels;
 using Microsoft.Extensions.Logging;
-using NewNews.DAL.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace NewNews.MAUI
 {
@@ -17,16 +60,14 @@ namespace NewNews.MAUI
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton(sp =>
+            // Registrera NewsService med HttpClient
+            builder.Services.AddHttpClient<NewsService>(client =>
             {
-                var client = new HttpClient();
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
-                return client;
             });
-            builder.Services.AddSingleton<NewsService>();
-            builder.Services.AddSingleton<MainViewModel>();
-            
 
+            // Registrera MainViewModel som singleton
+            builder.Services.AddSingleton<MainViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();
