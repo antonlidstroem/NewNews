@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- FRAME för artiklar -->
+    <Style x:Key="ArticleFrameStyle" TargetType="Frame">
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="BackgroundColor" Value="White"/>
+        <Setter Property="HasShadow" Value="True"/>
+        <Setter Property="BorderColor" Value="#DDD"/>
+    </Style>
+
+    <!-- VERTICAL STACK inuti frame -->
+    <Style x:Key="ArticleVerticalStackStyle" TargetType="VerticalStackLayout">
+        <Setter Property="Spacing" Value="5"/>
+    </Style>
+
+    <!-- TITEL -->
+    <Style x:Key="TitleLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="#333"/>
+        <Setter Property="LineBreakMode" Value="TailTruncation"/>
+    </Style>
+
+    <!-- BESKRIVNING -->
+    <Style x:Key="DescriptionLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="TextColor" Value="#555"/>
+        <Setter Property="LineBreakMode" Value="TailTruncation"/>
+        <Setter Property="MaxLines" Value="3"/>
+    </Style>
+
+    <!-- KÄLLA -->
+    <Style x:Key="SourceLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="TextColor" Value="#888"/>
+    </Style>
+
+    <!-- PUBLICERINGSDATUM -->
+    <Style x:Key="PublishedAtLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="TextColor" Value="#888"/>
+        <Setter Property="HorizontalOptions" Value="End"/>
+    </Style>
+
+</ResourceDictionary>
