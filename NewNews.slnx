@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NewNews.DAL/NewNews.DAL.csproj" />
+  <Project Path="NewNews.MAUI/NewNews.MAUI.csproj" />
+</Solution>

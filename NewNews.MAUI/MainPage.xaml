@@ -1,0 +1,108 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:NewNews.MAUI.ViewModels"
+             xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
+             x:DataType="vm:MainViewModel"
+             x:Class="NewNews.MAUI.MainPage"
+             Title="{Binding Title}">
+
+    <Grid Padding="10" RowDefinitions="Auto,*">
+
+        <!-- Sökfält -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="5">
+            <Entry Placeholder="Sök nyheter"
+                   Text="{Binding SearchQuery}"
+                   HorizontalOptions="FillAndExpand"/>
+            <Button Text="Sök"
+                    Command="{Binding SearchNewsCommand}"/>
+        </HorizontalStackLayout>
+
+        <!-- Nyhetslista -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Articles}"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:News">
+                    <!-- Kortet för varje artikel -->
+                    <Frame Padding="8"
+                           Margin="0,4"
+                           CornerRadius="12"
+                           HasShadow="False"
+                           BorderColor="#E0E0E0">
+
+                        <!-- Grid för bild + text -->
+                        <Grid x:Name="ArticleGrid"
+                              ColumnDefinitions="Auto, *"
+                              RowDefinitions="Auto">
+                            <Image Grid.Column="0"
+                                   HeightRequest="80"
+                                   WidthRequest="80"
+                         
+                                   Aspect="AspectFill"
+                                   BackgroundColor="#F0F0F0"
+                                   Source="{Binding ImageUrl}"/>
+
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="4"
+                                                 HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding Title}"
+                                       FontAttributes="Bold"
+                                       FontSize="14"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="3"/>
+                                <Label Text="{Binding Description}"
+                                       FontSize="12"
+                                       TextColor="Black"
+                                       LineBreakMode="WordWrap"
+                                       MaxLines="4"/>
+                                <Label Text="{Binding Source}"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
+                                       FontSize="11"
+                                       TextColor="DarkGray"/>
+                            </VerticalStackLayout>
+
+                            <!-- VisualStateManager för responsiv layout -->
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="WindowStates">
+                                    <VisualState Name="Narrow">
+                                        <VisualState.Setters>
+                                            <!-- Byt Grid till en kolumn (vertikal) när fönstret är smalt -->
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="ColumnDefinitions"
+                                                    Value="*, *"/>
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="RowDefinitions"
+                                                    Value="Auto, Auto"/>
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="ColumnSpacing"
+                                                    Value="0"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="Wide">
+                                        <VisualState.Setters>
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="ColumnDefinitions"
+                                                    Value="Auto, *"/>
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="RowDefinitions"
+                                                    Value="Auto"/>
+                                            <Setter TargetName="ArticleGrid"
+                                                    Property="ColumnSpacing"
+                                                    Value="10"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>
