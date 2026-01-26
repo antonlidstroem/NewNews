@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
+using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
@@ -9,7 +10,8 @@ namespace NewNews.MAUI.ViewModels
     public partial class MainViewModel : BaseViewModel
     {
         private readonly NewsService _newsService;
-
+        private readonly SearchKeywordService _keywordService;
+        public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
         public ObservableCollection<News> Articles { get; } = new();
 
         [ObservableProperty] private string? searchQuery;
@@ -19,9 +21,10 @@ namespace NewNews.MAUI.ViewModels
         private int currentPage = 1;
         private const int pageSize = 5;
 
-        public MainViewModel(NewsService newsService)
+        public MainViewModel(NewsService newsService, SearchKeywordService keywordService)
         {
             _newsService = newsService;
+            _keywordService = keywordService;
             Title = "Nyheter";
         }
 
@@ -62,6 +65,14 @@ namespace NewNews.MAUI.ViewModels
         public async Task LoadMoreNewsCommand()
         {
             await LoadMoreNews(SearchQuery ?? "nyheter");
+        }
+
+        private async void LoadSavedKeywords()
+        {
+            SavedKeywords.Clear();
+            var keywords = await _keywordService.GetAllKeywordsAsync();
+            foreach (var k in keywords)
+                SavedKeywords.Add(k);
         }
     }
 }

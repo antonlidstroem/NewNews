@@ -4,9 +4,10 @@
              xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
              x:DataType="vm:MainViewModel"
              x:Class="NewNews.MAUI.MainPage"
+             x:Name="MainPage"
              Title="{Binding Title}">
 
-    <Grid Padding="10" RowDefinitions="Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,*">
 
         <!-- Sökfält -->
         <HorizontalStackLayout Grid.Row="0" Spacing="5">
@@ -17,15 +18,24 @@
                     Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
-        <!-- Nyhetslista -->
-        <CollectionView
-            Grid.Row="1"
-            ItemsSource="{Binding Articles}"
-            RemainingItemsThreshold="0"
-            RemainingItemsThresholdReachedCommand="{Binding LoadMoreNewsCommand}"
-            SelectionMode="None"
-            HeightRequest="600">
+        <!-- Sparade sökord -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding SavedKeywords}"
+                        SelectionMode="Single"
+                        HeightRequest="50">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Button Text="{Binding Keyword}"
+                            Command="{Binding BindingContext.SearchByKeywordCommand, Source={x:Reference MainPage}}"
+                            CommandParameter="{Binding .}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
+        <!-- Nyhetslista -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Articles}"
+                        SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:News">
                     <Border Style="{StaticResource ArticleFrameStyle}">
@@ -33,24 +43,22 @@
 
                             <!-- Bild -->
                             <Image Source="{Binding ImageUrl}"
-                       HeightRequest="150"
-                       Aspect="AspectFill"
-                       BackgroundColor="#F0F0F0"/>
+                                   HeightRequest="150"
+                                   Aspect="AspectFill"
+                                   BackgroundColor="#F0F0F0"/>
 
                             <!-- Text -->
                             <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
                             <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}" />
                             <Label Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                       Style="{StaticResource PublishedAtLabelStyle}" />
+                                   Style="{StaticResource PublishedAtLabelStyle}" />
 
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-
         </CollectionView>
-
 
     </Grid>
 </ContentPage>
