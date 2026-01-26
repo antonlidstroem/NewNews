@@ -26,6 +26,8 @@ namespace NewNews.MAUI.ViewModels
             _newsService = newsService;
             _keywordService = keywordService;
             Title = "Nyheter";
+            LoadSavedKeywords();
+
         }
 
         [RelayCommand]
@@ -74,5 +76,15 @@ namespace NewNews.MAUI.ViewModels
             foreach (var k in keywords)
                 SavedKeywords.Add(k);
         }
+
+        [RelayCommand]
+        private async Task SearchByKeyword(SavedSearch search)
+        {
+            if (search == null) return;
+
+            SearchQuery = search.Keyword;
+            await SearchNews();
+        }
+
     }
 }

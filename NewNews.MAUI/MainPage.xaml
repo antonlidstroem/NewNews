@@ -4,7 +4,7 @@
              xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
              x:DataType="vm:MainViewModel"
              x:Class="NewNews.MAUI.MainPage"
-             x:Name="MainPage"
+             x:Name="RootPage"
              Title="{Binding Title}">
 
     <Grid Padding="10" RowDefinitions="Auto,Auto,*">
@@ -26,7 +26,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Keyword}"
-                            Command="{Binding BindingContext.SearchByKeywordCommand, Source={x:Reference MainPage}}"
+                            Command="{Binding BindingContext.SearchByKeywordCommand, Source={x:Reference RootPage}}"
                             CommandParameter="{Binding .}"/>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

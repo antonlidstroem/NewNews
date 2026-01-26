@@ -28,8 +28,12 @@ namespace NewNews.DAL.Services
             if (string.IsNullOrWhiteSpace(keyword))
                 return Task.CompletedTask;
 
-            var search = new SavedSearch { Keyword = keyword };
-            return _db.InsertOrIgnoreAsync(search); // Ignorera om redan finns
+            return _db.ExecuteAsync(
+                "INSERT OR IGNORE INTO SavedSearch (Keyword, CreatedAt) VALUES (?, ?)",
+                keyword,
+                DateTime.UtcNow
+            );
         }
+
     }
 }
