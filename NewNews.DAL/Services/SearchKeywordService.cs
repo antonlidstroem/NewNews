@@ -23,17 +23,25 @@ namespace NewNews.DAL.Services
                       .ToListAsync();
         }
 
-        public Task AddKeywordAsync(string keyword)
+        public Task AddKeywordAsync(string keyword, string language, string? category = null)
         {
             if (string.IsNullOrWhiteSpace(keyword))
                 return Task.CompletedTask;
 
             return _db.ExecuteAsync(
-                "INSERT OR IGNORE INTO SavedSearch (Keyword, CreatedAt) VALUES (?, ?)",
+                "INSERT OR IGNORE INTO SavedSearch (Keyword, Language, Category, CreatedAt) VALUES (?, ?, ?, ?)",
                 keyword,
+                language,
+                category,
                 DateTime.UtcNow
             );
         }
+        public Task DeleteKeywordAsync(int id)
+        {
+            return _db.DeleteAsync<SavedSearch>(id);
+        }
+
+
 
     }
 }

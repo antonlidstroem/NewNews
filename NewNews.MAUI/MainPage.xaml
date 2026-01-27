@@ -7,132 +7,105 @@
              x:Name="RootPage"
              Title="{Binding Title}">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
 
+        <!-- Row 0: Logo (valfritt, kan tas bort) -->
         <!--<HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Padding="0,10,0,10">
-            <Image Source="newnews_logo.png"   
-                HeightRequest="50"
-               Aspect="AspectFit"/>
+            <Image Source="newnews_logo.png" HeightRequest="50" Aspect="AspectFit"/>
         </HorizontalStackLayout>-->
 
-        <!-- Sökfält -->
-        <HorizontalStackLayout Grid.Row="1" Spacing="2">
-            <Entry Placeholder="Sök nyheter"
-                   Text="{Binding SearchQuery}"/>
-            <Button Text="Sök"
-                    Command="{Binding SearchNewsCommand}"/>
+        <!-- Row 1: Sökfält -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="5">
+            <Entry Placeholder="Sök nyheter" Text="{Binding SearchQuery}" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Sök" Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
-        <!-- Språk-dropdown -->
-        <HorizontalStackLayout Grid.Row="2" Spacing="5" Padding="0,5,0,5">
-            <Label Text="Språk:" VerticalOptions="Center"/>
-            <Picker ItemsSource="{Binding LanguageNames}" 
-            SelectedItem="{Binding SelectedLanguage}" 
-            Title="Välj språk"/>
+        <!-- Row 2: Språk / kategori / spara sökning -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="10">
+
+            <!-- Språk -->
+            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                <Label Text="Språk:" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="Välj språk"/>
+            </HorizontalStackLayout>
+
+            <!-- Kategori (endast för engelska) -->
+            <HorizontalStackLayout Spacing="5" VerticalOptions="Center" IsVisible="{Binding IsCategoryVisible}">
+                <Label Text="Kategori:" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="Välj kategori"/>
+            </HorizontalStackLayout>
+
+            <!-- Spara sökning -->
+            <Button Text="💾 Spara sökning" Command="{Binding SaveSearchCommand}"/>
+
         </HorizontalStackLayout>
 
-        <!-- Kategori-dropdown (endast synlig för engelska) -->
-        <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5"
-                       IsVisible="{Binding IsCategoryVisible}">
-            <Label Text="Kategori:" VerticalOptions="Center"/>
-            <Picker ItemsSource="{Binding Categories}" 
-            SelectedItem="{Binding SelectedCategory}" 
-            Title="Välj kategori"/>
+        <!-- Row 3: Picker för sparade sökord -->
+        <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5" VerticalOptions="Center">
+            <Label Text="Sparade sökord:" VerticalOptions="Center"/>
+            <Picker ItemsSource="{Binding SavedKeywords}"
+                    ItemDisplayBinding="{Binding Keyword}"
+                    SelectedItem="{Binding SelectedSavedSearch}"
+                    Title="Välj sökord"
+                    HorizontalOptions="FillAndExpand"/>
         </HorizontalStackLayout>
 
+        <!-- SwipeView wrap för hela CollectionView -->
+        <SwipeView Grid.Row="5">
+            <SwipeView.LeftItems>
+                <SwipeItems Mode="Reveal">
+                    <SwipeItem Text="◀️ Föregående" BackgroundColor="LightGray" Command="{Binding PreviousSavedSearchCommand}"/>
+                </SwipeItems>
+            </SwipeView.LeftItems>
+            <SwipeView.RightItems>
+                <SwipeItems Mode="Reveal">
+                    <SwipeItem Text="Nästa ▶️" BackgroundColor="LightGray" Command="{Binding NextSavedSearchCommand}"/>
+                </SwipeItems>
+            </SwipeView.RightItems>
 
-        <!-- Sparade sökord -->
-        <CollectionView Grid.Row="4"
-                ItemsSource="{Binding Articles}"
-                SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:News">
-                    <Border Style="{StaticResource ArticleFrameStyle}">
-                        <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+            <!-- CollectionView ligger inuti SwipeView -->
+            <CollectionView ItemsSource="{Binding Articles}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:News">
+                        <Border Style="{StaticResource ArticleFrameStyle}">
+                            <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+                                <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+                                <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                                TextColor="#888" Padding="0" HorizontalOptions="Start"
+                                Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
+                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
-                            <!-- Titel (alltid synlig) -->
-                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
-
-                            <!-- Element som ska döljas när expanderat -->
-                            <Image Source="{Binding ImageUrl}"
-                           HeightRequest="150"
-                           Aspect="AspectFill"
-                           BackgroundColor="#F0F0F0"
-                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-
-                            <Label Text="{Binding Description}" 
-                           Style="{StaticResource DescriptionLabelStyle}"
-                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-
-                            <Button Text="{Binding Source}"
-                            Style="{StaticResource SourceLabelStyle}"
-                            BackgroundColor="Transparent"
-                            TextColor="#888"
-                            Padding="0"
-                            HorizontalOptions="Start"
-                            Command="{Binding SourceTappedCommand}"
-                            CommandParameter="{Binding Url}"
-                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-
-                            <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                           Style="{StaticResource PublishedAtLabelStyle}"
-                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-
-                            <!-- Expanded content med WebView -->
-                            <!-- Expanded content -->
-                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="0">
-
-                                <!-- Action bar (syns bara när expanderad) -->
-                                <HorizontalStackLayout Spacing="5">
-
-                                    <!-- Minimera -->
-                                    <Button Text="✕ Stäng artikel"
-                                        FontSize="14"
-                                        WidthRequest="32"
-                                        HeightRequest="32"
-                                        BackgroundColor="#F0F0F0"
-                                        TextColor="#333"
-                                        CornerRadius="16"
+                                <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Button Text="✕ Stäng artikel" FontSize="14" WidthRequest="32" HeightRequest="32"
+                                        BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
                                         Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding .}" />
-
-
-                                    <!-- Läs i webbläsare -->
-                                    <Button Text="🌐 Läs originalet"
-                                        FontSize="12"
-                                        Padding="6,2"
+                                        <Button Text="🌐 Läs originalet" FontSize="12" Padding="6,2"
                                         Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding Url}" />
+                                    </HorizontalStackLayout>
 
-                                </HorizontalStackLayout>
-
-                                <!-- Artikeltext -->
-                                <!--<Label Text="{Binding Content}"
-                                          LineBreakMode="WordWrap" />-->
-
-                                <!-- Inbäddad artikel -->
-                                <WebView Source="{Binding Url}"
-                                           HeightRequest="400" />
+                                    <WebView Source="{Binding Url}" HeightRequest="400"/>
+                                </VerticalStackLayout>
 
                             </VerticalStackLayout>
 
-
-                        </VerticalStackLayout>
-
-                        <!-- TapGesture på hela kortet -->
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
-                                          CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-
-
-
-
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                              CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </SwipeView>
 
 
     </Grid>

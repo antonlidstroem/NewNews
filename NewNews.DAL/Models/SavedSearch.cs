@@ -15,6 +15,10 @@ namespace NewNews.DAL.Models
         [Unique]
         public string Keyword { get; set; } = string.Empty;
 
+        public string Language { get; set; } = "sv";
+
+        public string? Category { get; set; } = null; // bara för engelska
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 

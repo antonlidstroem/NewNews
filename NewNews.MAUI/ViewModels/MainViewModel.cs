@@ -191,6 +191,82 @@ namespace NewNews.MAUI.ViewModels
             _ = OnCategoryChangedAsync();
         }
 
+        [RelayCommand]
+        private async Task SaveSearch()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+                return;
+
+            string? categoryToSave = IsCategoryVisible && SelectedCategory != "Allt" ? SelectedCategory : null;
+
+            await _keywordService.AddKeywordAsync(SearchQuery, SelectedLanguage, categoryToSave);
+
+            // Ladda om sparade sökningar
+            LoadSavedKeywords();
+        }
+
+        [ObservableProperty]
+        private SavedSearch? selectedSavedSearch;
+
+        partial void OnSelectedSavedSearchChanged(SavedSearch? value)
+        {
+            if (value == null) return;
+
+            SearchQuery = value.Keyword;
+            SelectedLanguage = value.Language;
+
+            if (!string.IsNullOrWhiteSpace(value.Category))
+                SelectedCategory = value.Category;
+            else
+                SelectedCategory = "Allt";
+
+            _ = SearchNews();
+        }
+
+
+
+        [RelayCommand]
+        private async Task DeleteSavedSearch(SavedSearch search)
+        {
+            if (search == null) return;
+
+            await _keywordService.DeleteKeywordAsync(search.Id);
+            LoadSavedKeywords();
+        }
+
+        private int _currentSavedIndex = 0;
+
+        [RelayCommand]
+        private void NextSavedSearch()
+        {
+            if (SavedKeywords.Count == 0) return;
+
+            _currentSavedIndex++;
+            if (_currentSavedIndex >= SavedKeywords.Count)
+                _currentSavedIndex = 0; // loopa tillbaka till första
+
+            SelectSavedSearchByIndex(_currentSavedIndex);
+        }
+
+        [RelayCommand]
+        private void PreviousSavedSearch()
+        {
+            if (SavedKeywords.Count == 0) return;
+
+            _currentSavedIndex--;
+            if (_currentSavedIndex < 0)
+                _currentSavedIndex = SavedKeywords.Count - 1; // loopa till sista
+
+            SelectSavedSearchByIndex(_currentSavedIndex);
+        }
+
+        private void SelectSavedSearchByIndex(int index)
+        {
+            if (index < 0 || index >= SavedKeywords.Count) return;
+
+            var saved = SavedKeywords[index];
+            SelectedSavedSearch = saved;
+        }
 
     }
 }
