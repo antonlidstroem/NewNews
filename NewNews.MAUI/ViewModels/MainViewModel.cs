@@ -24,6 +24,21 @@ namespace NewNews.MAUI.ViewModels
         private int currentPage = 1;
         private const int pageSize = 5;
 
+        public ObservableCollection<string> Categories { get; } = new()
+        {
+        "Allt",
+        "Business",
+        "Entertainment",
+        "General",
+        "Health",
+        "Science",
+        "Sports",
+        "Technology"
+         };
+
+        [ObservableProperty]
+        private string selectedCategory = "Allt";
+
         public MainViewModel(NewsService newsService, SearchKeywordService keywordService)
         {
             _newsService = newsService;
@@ -48,7 +63,9 @@ namespace NewNews.MAUI.ViewModels
             if (IsBusy || !hasMoreItems) return;
             IsBusy = true;
 
-            var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query);
+            string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
+
+            var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query, categoryFilter);
 
             foreach (var item in news)
                 Articles.Add(item);
@@ -89,14 +106,6 @@ namespace NewNews.MAUI.ViewModels
             await SearchNews();
         }
 
-        //[RelayCommand]
-        //private void ToggleNewsExpanded(News news)
-        //{
-        //    if (news == null) return;
-
-        //    // Toggle state
-        //    news.IsExpanded = !news.IsExpanded;
-        //}
 
         [RelayCommand]
         private void ToggleNewsExpanded(News article)
@@ -131,6 +140,20 @@ namespace NewNews.MAUI.ViewModels
                 return;
 
             await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
+        }
+
+        partial void OnSelectedCategoryChanged(string value)
+        {
+            _ = OnCategoryChangedAsync();
+        }
+
+        private async Task OnCategoryChangedAsync()
+        {
+            Articles.Clear();
+            currentPage = 1;
+            hasMoreItems = true;
+
+            await LoadMoreNews(SearchQuery ?? "nyheter");
         }
 
 

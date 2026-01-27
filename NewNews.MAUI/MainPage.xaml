@@ -23,6 +23,15 @@
                     Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
+        <!-- Kategori-filter -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="5" Padding="0,5,0,5">
+            <Label Text="Kategori:" VerticalOptions="Center"/>
+            <Picker ItemsSource="{Binding Categories}" 
+            SelectedItem="{Binding SelectedCategory}" 
+            Title="Välj kategori"/>
+        </HorizontalStackLayout>
+
+
         <!-- Sparade sökord -->
         <CollectionView Grid.Row="3"
                 ItemsSource="{Binding Articles}"
