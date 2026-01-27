@@ -32,6 +32,7 @@ public class NewsService
                 Url = a.Url,
                 ImageUrl = a.UrlToImage,
                 Source = a.Source?.Name,
+                Content = a.Content,
                 PublishedAt = a.PublishedAt
             }).ToList();
         }

@@ -7,6 +7,7 @@
         public string? Url { get; set; }
         public string? UrlToImage { get; set; }
         public DateTime PublishedAt { get; set; }
+        public string? Content { get; set; }
         public SourceDto Source { get; set; } = new();
     }
 }

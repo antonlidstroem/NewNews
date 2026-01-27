@@ -7,19 +7,24 @@
              x:Name="RootPage"
              Title="{Binding Title}">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,*">
+
+        <!--<HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Padding="0,10,0,10">
+            <Image Source="newnews_logo.png"   
+                HeightRequest="50"
+               Aspect="AspectFit"/>
+        </HorizontalStackLayout>-->
 
         <!-- Sökfält -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="5">
+        <HorizontalStackLayout Grid.Row="1" Spacing="5">
             <Entry Placeholder="Sök nyheter"
-                   Text="{Binding SearchQuery}"
-                   HorizontalOptions="FillAndExpand"/>
+                   Text="{Binding SearchQuery}"/>
             <Button Text="Sök"
                     Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
         <!-- Sparade sökord -->
-        <CollectionView Grid.Row="1"
+        <CollectionView Grid.Row="2"
                         ItemsSource="{Binding SavedKeywords}"
                         SelectionMode="Single"
                         HeightRequest="50">
@@ -33,32 +38,51 @@
         </CollectionView>
 
         <!-- Nyhetslista -->
-        <CollectionView Grid.Row="2"
-                        ItemsSource="{Binding Articles}"
-                        SelectionMode="None">
+        <CollectionView Grid.Row="3"
+                ItemsSource="{Binding Articles}"
+                SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:News">
-                    <Border Style="{StaticResource ArticleFrameStyle}">
+                    <Frame Style="{StaticResource ArticleFrameStyle}">
                         <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
 
                             <!-- Bild -->
                             <Image Source="{Binding ImageUrl}"
-                                   HeightRequest="150"
-                                   Aspect="AspectFill"
-                                   BackgroundColor="#F0F0F0"/>
+                           HeightRequest="150"
+                           Aspect="AspectFill"
+                           BackgroundColor="#F0F0F0"/>
 
-                            <!-- Text -->
+                            <!-- Titel -->
                             <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
-                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}" />
+
+                            <!-- Beskrivning / full artikel -->
+                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="True">
+                                        <Setter Property="Text" Value="{Binding Content}" />
+                                        <Setter Property="LineBreakMode" Value="WordWrap"/>
+                                        <Setter Property="MaxLines" Value="0"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <!-- Källa och datum -->
                             <Label Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                                   Style="{StaticResource PublishedAtLabelStyle}" />
+                           Style="{StaticResource PublishedAtLabelStyle}" />
 
                         </VerticalStackLayout>
-                    </Border>
+
+                        <!-- TapGesture på hela kortet -->
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                          CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
 
     </Grid>
 </ContentPage>

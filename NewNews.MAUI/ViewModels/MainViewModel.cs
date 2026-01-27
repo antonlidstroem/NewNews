@@ -86,5 +86,15 @@ namespace NewNews.MAUI.ViewModels
             await SearchNews();
         }
 
+        [RelayCommand]
+        private void ToggleNewsExpanded(News news)
+        {
+            if (news == null) return;
+
+            // Toggle state
+            news.IsExpanded = !news.IsExpanded;
+        }
+
+
     }
 }
