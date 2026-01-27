@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
 using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
-//using Microsoft.Maui.Essentials;
 
 namespace NewNews.MAUI.ViewModels
 {
@@ -36,16 +35,13 @@ namespace NewNews.MAUI.ViewModels
         {"Norsk", "no"},
         {"Português", "pt"},
         {"Русский", "ru"},
-        {"العربية", "ar"},
-        {"中文", "zh"},
-        {"Urdu", "ud"}
     };
 
         // Dropdown-visning
         public ObservableCollection<string> LanguageNames { get; }
 
         [ObservableProperty]
-        private string selectedLanguage = "Swedish"; // default
+        private string selectedLanguage = "Swedish"; 
 
         public ObservableCollection<string> Categories { get; } = new()
         {
@@ -184,17 +180,12 @@ namespace NewNews.MAUI.ViewModels
             if (AvailableLanguages.TryGetValue(value, out var langCode))
                 _newsService.Language = langCode;
 
-            SearchNewsCommand.Execute(null); // ladda om artiklar
+            SearchNewsCommand.Execute(null); 
             OnPropertyChanged(nameof(IsCategoryVisible));
         }
 
         public bool IsCategoryVisible => SelectedLanguage == "English";
 
-
-        //partial void OnSelectedCategoryChanged(string value)
-        //{
-        //    SearchNewsCommand.Execute(null);
-        //}
         partial void OnSelectedCategoryChanged(string value)
         {
             _ = OnCategoryChangedAsync();
