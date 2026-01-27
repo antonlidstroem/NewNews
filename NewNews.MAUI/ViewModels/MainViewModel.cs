@@ -88,30 +88,41 @@ namespace NewNews.MAUI.ViewModels
             await SearchNews();
         }
 
-        [RelayCommand]
-        private void ToggleNewsExpanded(News news)
-        {
-            if (news == null) return;
+        //[RelayCommand]
+        //private void ToggleNewsExpanded(News news)
+        //{
+        //    if (news == null) return;
 
-            // Toggle state
-            news.IsExpanded = !news.IsExpanded;
+        //    // Toggle state
+        //    news.IsExpanded = !news.IsExpanded;
+        //}
+
+        [RelayCommand]
+        private void ToggleNewsExpanded(News article)
+        {
+            if (article == null) return;
+
+            // Om du vill att bara en artikel kan vara öppen åt gången:
+            foreach (var a in Articles)
+                if (a != article)
+                    a.IsExpanded = false;
+
+            article.IsExpanded = !article.IsExpanded;
         }
 
         [RelayCommand]
-        private void SourceTapped(string? url)
+        private async Task SourceTapped(string? url)
         {
             if (!string.IsNullOrWhiteSpace(url))
             {
-                try
+                // Navigera till WebView-sidan
+                if (Application.Current.MainPage is not null)
                 {
-                    Launcher.OpenAsync(new Uri(url));
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Could not open URL: {ex.Message}");
+                    await Application.Current.MainPage.Navigation.PushAsync(new ArticleWebViewPage(url));
                 }
             }
         }
+
 
 
     }

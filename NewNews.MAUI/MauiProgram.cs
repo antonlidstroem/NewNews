@@ -6,6 +6,7 @@ using NewNews.MAUI.ViewModels;
 
 namespace NewNews.MAUI
 {
+    
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()

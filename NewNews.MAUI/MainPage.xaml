@@ -24,20 +24,6 @@
         </HorizontalStackLayout>
 
         <!-- Sparade sökord -->
-        <CollectionView Grid.Row="2"
-                        ItemsSource="{Binding SavedKeywords}"
-                        SelectionMode="Single"
-                        HeightRequest="50">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Button Text="{Binding Keyword}"
-                            Command="{Binding BindingContext.SearchByKeywordCommand, Source={x:Reference RootPage}}"
-                            CommandParameter="{Binding .}"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        <!-- Nyhetslista -->
         <CollectionView Grid.Row="3"
                 ItemsSource="{Binding Articles}"
                 SelectionMode="None">
@@ -46,46 +32,39 @@
                     <Frame Style="{StaticResource ArticleFrameStyle}">
                         <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
 
-                            <!-- Bild -->
+                            <!-- Titel (alltid synlig) -->
+                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+
+                            <!-- Element som ska döljas när expanderat -->
                             <Image Source="{Binding ImageUrl}"
                            HeightRequest="150"
                            Aspect="AspectFill"
-                           BackgroundColor="#F0F0F0"/>
+                           BackgroundColor="#F0F0F0"
+                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
-                            <!-- Titel -->
-                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
-
-                            <!-- Beskrivning / full artikel -->
-                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="True">
-                                        <Setter Property="Text" Value="{Binding Content}" />
-                                        <Setter Property="LineBreakMode" Value="WordWrap"/>
-                                        <Setter Property="MaxLines" Value="0"/>
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-
-                            <!-- Källa och datum -->
-                            <!--<Label Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}">
-                                <Label.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding SourceTappedCommand}"
-                                            CommandParameter="{Binding Url}" />
-                                         </Label.GestureRecognizers>
-                            </Label>-->
+                            <Label Text="{Binding Description}" 
+                           Style="{StaticResource DescriptionLabelStyle}"
+                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
                             <Button Text="{Binding Source}"
-                                Style="{StaticResource SourceLabelStyle}"
-                                BackgroundColor="Transparent"
-                                TextColor="#888"
-                                Padding="0"
-                                HorizontalOptions="Start"
-                                Command="{Binding SourceTappedCommand}"
-                                CommandParameter="{Binding Url}" />
+                            Style="{StaticResource SourceLabelStyle}"
+                            BackgroundColor="Transparent"
+                            TextColor="#888"
+                            Padding="0"
+                            HorizontalOptions="Start"
+                            Command="{Binding SourceTappedCommand}"
+                            CommandParameter="{Binding Url}"
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                           Style="{StaticResource PublishedAtLabelStyle}" />
+                           Style="{StaticResource PublishedAtLabelStyle}"
+                           IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+
+                            <!-- Expanded content med WebView -->
+                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                <Label Text="{Binding Content}" LineBreakMode="WordWrap"/>
+                                <WebView Source="{Binding Url}" HeightRequest="400"/>
+                            </VerticalStackLayout>
 
                         </VerticalStackLayout>
 
@@ -98,6 +77,11 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+
+
+
+
 
 
     </Grid>
