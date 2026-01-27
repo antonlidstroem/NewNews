@@ -16,7 +16,7 @@
         </HorizontalStackLayout>-->
 
         <!-- Sökfält -->
-        <HorizontalStackLayout Grid.Row="1" Spacing="5">
+        <HorizontalStackLayout Grid.Row="1" Spacing="2">
             <Entry Placeholder="Sök nyheter"
                    Text="{Binding SearchQuery}"/>
             <Button Text="Sök"
@@ -29,7 +29,7 @@
                 SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:News">
-                    <Frame Style="{StaticResource ArticleFrameStyle}">
+                    <Border Style="{StaticResource ArticleFrameStyle}">
                         <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
 
                             <!-- Titel (alltid synlig) -->
@@ -61,19 +61,52 @@
                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
                             <!-- Expanded content med WebView -->
-                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
-                                <Label Text="{Binding Content}" LineBreakMode="WordWrap"/>
-                                <WebView Source="{Binding Url}" HeightRequest="400"/>
+                            <!-- Expanded content -->
+                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="0">
+
+                                <!-- Action bar (syns bara när expanderad) -->
+                                <HorizontalStackLayout Spacing="5">
+
+                                    <!-- Minimera -->
+                                    <Button Text="✕ Stäng artikel"
+                                        FontSize="14"
+                                        WidthRequest="32"
+                                        HeightRequest="32"
+                                        BackgroundColor="#F0F0F0"
+                                        TextColor="#333"
+                                        CornerRadius="16"
+                                        Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                        CommandParameter="{Binding .}" />
+
+
+                                    <!-- Läs i webbläsare -->
+                                    <Button Text="🌐 Läs originalet"
+                                        FontSize="12"
+                                        Padding="6,2"
+                                        Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
+                                        CommandParameter="{Binding Url}" />
+
+                                </HorizontalStackLayout>
+
+                                <!-- Artikeltext -->
+                                <!--<Label Text="{Binding Content}"
+                                          LineBreakMode="WordWrap" />-->
+
+                                <!-- Inbäddad artikel -->
+                                <WebView Source="{Binding Url}"
+                                           HeightRequest="400" />
+
                             </VerticalStackLayout>
+
 
                         </VerticalStackLayout>
 
                         <!-- TapGesture på hela kortet -->
-                        <Frame.GestureRecognizers>
+                        <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
                                           CommandParameter="{Binding .}" />
-                        </Frame.GestureRecognizers>
-                    </Frame>
+                        </Border.GestureRecognizers>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

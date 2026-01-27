@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
@@ -122,6 +123,16 @@ namespace NewNews.MAUI.ViewModels
                 }
             }
         }
+
+        [RelayCommand]
+        private async Task OpenInBrowser(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
+        }
+
 
 
 
