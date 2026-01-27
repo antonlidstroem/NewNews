@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
 using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
+//using Microsoft.Maui.Essentials;
 
 namespace NewNews.MAUI.ViewModels
 {
@@ -93,6 +95,22 @@ namespace NewNews.MAUI.ViewModels
 
             // Toggle state
             news.IsExpanded = !news.IsExpanded;
+        }
+
+        [RelayCommand]
+        private void SourceTapped(string? url)
+        {
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                try
+                {
+                    Launcher.OpenAsync(new Uri(url));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Could not open URL: {ex.Message}");
+                }
+            }
         }
 
 

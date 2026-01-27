@@ -9,5 +9,20 @@
         public DateTime PublishedAt { get; set; }
         public string? Content { get; set; }
         public SourceDto Source { get; set; } = new();
+
+        public string CleanContent
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Content)) return "";
+                var cleaned = Content;
+
+                // Ta bort <ul><li> i början och </li></ul> i slutet
+                cleaned = cleaned.Replace("<ul><li>", "").Replace("</li></ul>", "");
+
+                return cleaned;
+            }
+        }
+
     }
 }

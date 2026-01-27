@@ -67,7 +67,23 @@
                             </Label>
 
                             <!-- Källa och datum -->
-                            <Label Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" />
+                            <!--<Label Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding SourceTappedCommand}"
+                                            CommandParameter="{Binding Url}" />
+                                         </Label.GestureRecognizers>
+                            </Label>-->
+
+                            <Button Text="{Binding Source}"
+                                Style="{StaticResource SourceLabelStyle}"
+                                BackgroundColor="Transparent"
+                                TextColor="#888"
+                                Padding="0"
+                                HorizontalOptions="Start"
+                                Command="{Binding SourceTappedCommand}"
+                                CommandParameter="{Binding Url}" />
+
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
                            Style="{StaticResource PublishedAtLabelStyle}" />
 

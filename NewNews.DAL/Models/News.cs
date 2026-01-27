@@ -14,5 +14,6 @@ namespace NewNews.DAL.Models
 
         [ObservableProperty]
         private bool isExpanded;
+
     }
 }
