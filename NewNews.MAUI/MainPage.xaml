@@ -23,8 +23,17 @@
                     Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
-        <!-- Kategori-filter -->
+        <!-- Språk-dropdown -->
         <HorizontalStackLayout Grid.Row="2" Spacing="5" Padding="0,5,0,5">
+            <Label Text="Språk:" VerticalOptions="Center"/>
+            <Picker ItemsSource="{Binding LanguageNames}" 
+            SelectedItem="{Binding SelectedLanguage}" 
+            Title="Välj språk"/>
+        </HorizontalStackLayout>
+
+        <!-- Kategori-dropdown (endast synlig för engelska) -->
+        <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5"
+                       IsVisible="{Binding IsCategoryVisible}">
             <Label Text="Kategori:" VerticalOptions="Center"/>
             <Picker ItemsSource="{Binding Categories}" 
             SelectedItem="{Binding SelectedCategory}" 
@@ -33,7 +42,7 @@
 
 
         <!-- Sparade sökord -->
-        <CollectionView Grid.Row="3"
+        <CollectionView Grid.Row="4"
                 ItemsSource="{Binding Articles}"
                 SelectionMode="None">
             <CollectionView.ItemTemplate>

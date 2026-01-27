@@ -24,6 +24,29 @@ namespace NewNews.MAUI.ViewModels
         private int currentPage = 1;
         private const int pageSize = 5;
 
+        public Dictionary<string, string> AvailableLanguages { get; } = new()
+    {
+        {"English", "en"},
+        {"Svenska", "sv"},
+        {"Deutsch", "de"},
+        {"Español", "es"},
+        {"Français", "fr"},
+        {"Italiano", "it"},
+        {"Nederlands", "nl"},
+        {"Norsk", "no"},
+        {"Português", "pt"},
+        {"Русский", "ru"},
+        {"العربية", "ar"},
+        {"中文", "zh"},
+        {"Urdu", "ud"}
+    };
+
+        // Dropdown-visning
+        public ObservableCollection<string> LanguageNames { get; }
+
+        [ObservableProperty]
+        private string selectedLanguage = "Swedish"; // default
+
         public ObservableCollection<string> Categories { get; } = new()
         {
         "Allt",
@@ -43,6 +66,9 @@ namespace NewNews.MAUI.ViewModels
         {
             _newsService = newsService;
             _keywordService = keywordService;
+
+            LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
+
             Title = "Nyheter";
             LoadSavedKeywords();
 
@@ -142,10 +168,7 @@ namespace NewNews.MAUI.ViewModels
             await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
         }
 
-        partial void OnSelectedCategoryChanged(string value)
-        {
-            _ = OnCategoryChangedAsync();
-        }
+
 
         private async Task OnCategoryChangedAsync()
         {
@@ -156,7 +179,26 @@ namespace NewNews.MAUI.ViewModels
             await LoadMoreNews(SearchQuery ?? "nyheter");
         }
 
+        partial void OnSelectedLanguageChanged(string value)
+        {
+            if (AvailableLanguages.TryGetValue(value, out var langCode))
+                _newsService.Language = langCode;
 
+            SearchNewsCommand.Execute(null); // ladda om artiklar
+            OnPropertyChanged(nameof(IsCategoryVisible));
+        }
+
+        public bool IsCategoryVisible => SelectedLanguage == "English";
+
+
+        //partial void OnSelectedCategoryChanged(string value)
+        //{
+        //    SearchNewsCommand.Execute(null);
+        //}
+        partial void OnSelectedCategoryChanged(string value)
+        {
+            _ = OnCategoryChangedAsync();
+        }
 
 
     }
