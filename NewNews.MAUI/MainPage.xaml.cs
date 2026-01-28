@@ -17,7 +17,7 @@ namespace NewNews.MAUI
 
             if (BindingContext is MainViewModel vm)
             {
-                await vm.LoadMoreNews();
+                //await vm.LoadMoreNews();
             }
         }
 
