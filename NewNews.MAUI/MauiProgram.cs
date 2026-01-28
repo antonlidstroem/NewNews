@@ -1,9 +1,12 @@
-﻿using NewNews.MAUI.ViewModels;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewNews.DAL.Services;
+using NewNews.MAUI.ViewModels;
+
 
 namespace NewNews.MAUI
 {
+    
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
@@ -17,16 +20,18 @@ namespace NewNews.MAUI
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton(sp =>
-            {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
-                return client;
-            });
-            builder.Services.AddSingleton<NewsService>();
-            builder.Services.AddSingleton<MainViewModel>();
-            
+            // SQLite-databas
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "searchkeywords.db3");
+            builder.Services.AddSingleton(new SearchKeywordService(dbPath));
 
+            // Registrera NewsService med HttpClient
+            builder.Services.AddHttpClient<NewsService>(client =>
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
+            });
+
+            // Registrera MainViewModel som singleton
+            builder.Services.AddSingleton<MainViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

@@ -4,105 +4,109 @@
              xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
              x:DataType="vm:MainViewModel"
              x:Class="NewNews.MAUI.MainPage"
+             x:Name="RootPage"
              Title="{Binding Title}">
 
-    <Grid Padding="10" RowDefinitions="Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
 
-        <!-- Sökfält -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="5">
-            <Entry Placeholder="Sök nyheter"
-                   Text="{Binding SearchQuery}"
-                   HorizontalOptions="FillAndExpand"/>
-            <Button Text="Sök"
-                    Command="{Binding SearchNewsCommand}"/>
+        <!-- Row 0: Logo (valfritt, kan tas bort) -->
+        <!--<HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Padding="0,10,0,10">
+            <Image Source="newnews_logo.png" HeightRequest="50" Aspect="AspectFit"/>
+        </HorizontalStackLayout>-->
+
+        <!-- Row 1: Sökfält -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="5">
+            <Entry Placeholder="Sök nyheter" Text="{Binding SearchQuery}" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Sök" Command="{Binding SearchNewsCommand}"/>
         </HorizontalStackLayout>
 
-        <!-- Nyhetslista -->
-        <CollectionView Grid.Row="1"
-                        ItemsSource="{Binding Articles}"
-                        HorizontalOptions="FillAndExpand"
-                        VerticalOptions="FillAndExpand"
-                        SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:News">
-                    <!-- Kortet för varje artikel -->
-                    <Frame Padding="8"
-                           Margin="0,4"
-                           CornerRadius="12"
-                           HasShadow="False"
-                           BorderColor="#E0E0E0">
+        <!-- Row 2: Språk / kategori / spara sökning -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="10">
 
-                        <!-- Grid för bild + text -->
-                        <Grid x:Name="ArticleGrid"
-                              ColumnDefinitions="Auto, *"
-                              RowDefinitions="Auto">
-                            <Image Grid.Column="0"
-                                   HeightRequest="80"
-                                   WidthRequest="80"
-                         
-                                   Aspect="AspectFill"
-                                   BackgroundColor="#F0F0F0"
-                                   Source="{Binding ImageUrl}"/>
+            <!-- Språk -->
+            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                <Label Text="Språk:" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="Välj språk"/>
+            </HorizontalStackLayout>
 
-                            <VerticalStackLayout Grid.Column="1"
-                                                 Spacing="4"
-                                                 HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       FontSize="14"
-                                       LineBreakMode="TailTruncation"
-                                       MaxLines="3"/>
-                                <Label Text="{Binding Description}"
-                                       FontSize="12"
-                                       TextColor="Black"
-                                       LineBreakMode="WordWrap"
-                                       MaxLines="4"/>
-                                <Label Text="{Binding Source}"
-                                       FontSize="12"
-                                       TextColor="Gray"/>
-                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                                       FontSize="11"
-                                       TextColor="DarkGray"/>
+            <!-- Kategori (endast för engelska) -->
+            <HorizontalStackLayout Spacing="5" VerticalOptions="Center" IsVisible="{Binding IsCategoryVisible}">
+                <Label Text="Kategori:" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="Välj kategori"/>
+            </HorizontalStackLayout>
+
+            <!-- Spara sökning -->
+            <Button Text="💾 Spara sökning" Command="{Binding SaveSearchCommand}"/>
+
+        </HorizontalStackLayout>
+
+        <!-- Row 3: Picker för sparade sökord -->
+        <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5" VerticalOptions="Center">
+            <Label Text="Sparade sökord:" VerticalOptions="Center"/>
+            <Picker ItemsSource="{Binding SavedKeywords}"
+                    ItemDisplayBinding="{Binding Keyword}"
+                    SelectedItem="{Binding SelectedSavedSearch}"
+                    Title="Välj sökord"
+                    HorizontalOptions="FillAndExpand"/>
+        </HorizontalStackLayout>
+
+        <!-- SwipeView wrap för hela CollectionView -->
+        <SwipeView Grid.Row="5">
+            <SwipeView.LeftItems>
+                <SwipeItems Mode="Reveal">
+                    <SwipeItem Text="◀️ Föregående" BackgroundColor="LightGray" Command="{Binding PreviousSavedSearchCommand}"/>
+                </SwipeItems>
+            </SwipeView.LeftItems>
+            <SwipeView.RightItems>
+                <SwipeItems Mode="Reveal">
+                    <SwipeItem Text="Nästa ▶️" BackgroundColor="LightGray" Command="{Binding NextSavedSearchCommand}"/>
+                </SwipeItems>
+            </SwipeView.RightItems>
+
+            <!-- CollectionView ligger inuti SwipeView -->
+            <CollectionView ItemsSource="{Binding Articles}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:News">
+                        <Border Style="{StaticResource ArticleFrameStyle}">
+                            <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+                                <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+                                <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                                TextColor="#888" Padding="0" HorizontalOptions="Start"
+                                Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
+                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+
+                                <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Button Text="✕ Stäng artikel" FontSize="14" WidthRequest="32" HeightRequest="32"
+                                        BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
+                                        Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                        CommandParameter="{Binding .}" />
+                                        <Button Text="🌐 Läs originalet" FontSize="12" Padding="6,2"
+                                        Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
+                                        CommandParameter="{Binding Url}" />
+                                    </HorizontalStackLayout>
+
+                                    <WebView Source="{Binding Url}" HeightRequest="400"/>
+                                </VerticalStackLayout>
+
                             </VerticalStackLayout>
 
-                            <!-- VisualStateManager för responsiv layout -->
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="WindowStates">
-                                    <VisualState Name="Narrow">
-                                        <VisualState.Setters>
-                                            <!-- Byt Grid till en kolumn (vertikal) när fönstret är smalt -->
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnDefinitions"
-                                                    Value="*, *"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="RowDefinitions"
-                                                    Value="Auto, Auto"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnSpacing"
-                                                    Value="0"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Wide">
-                                        <VisualState.Setters>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnDefinitions"
-                                                    Value="Auto, *"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="RowDefinitions"
-                                                    Value="Auto"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnSpacing"
-                                                    Value="10"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                              CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </SwipeView>
 
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
 
     </Grid>
 </ContentPage>
