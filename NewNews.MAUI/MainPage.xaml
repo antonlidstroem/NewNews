@@ -46,48 +46,51 @@
 
 
 
-            <!-- CollectionView ligger inuti SwipeView -->
-            <CollectionView Grid.Row="5" ItemsSource="{Binding Articles}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:News">
-                        <Border Style="{StaticResource ArticleFrameStyle}">
-                            <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
-                                <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
-                                <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
+        <!-- CollectionView ligger inuti SwipeView -->
+        <CollectionView Grid.Row="5" ItemsSource="{Binding Articles}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:News">
+                    <Border Style="{StaticResource ArticleFrameStyle}">
+                        <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+                            <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                                <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
+                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                                <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                            <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
                                 TextColor="#888" Padding="0" HorizontalOptions="Start"
                                 Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
                                 IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
+                            <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
-                                <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
-                                    <HorizontalStackLayout Spacing="5">
-                                        <Button Text="✕ Stäng artikel" FontSize="14" WidthRequest="32" HeightRequest="32"
+                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Button Text="✕ Stäng artikel" FontSize="14" WidthRequest="32" HeightRequest="32"
                                         BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
                                         Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding .}" />
-                                        <Button Text="🌐 Läs originalet" FontSize="12" Padding="6,2"
+                                    <Button Text="🌐 Läs originalet" FontSize="12" Padding="6,2"
                                         Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding Url}" />
-                                    </HorizontalStackLayout>
+                                </HorizontalStackLayout>
 
-                                    <WebView Source="{Binding Url}" HeightRequest="400"/>
-                                </VerticalStackLayout>
+                                <WebView Source="{Binding Url}" 
+                                         HeightRequest="{Binding WebViewHeight}" 
+                                         Navigated="WebView_Navigated"/>
 
                             </VerticalStackLayout>
 
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                        </VerticalStackLayout>
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
                                               CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
 
 

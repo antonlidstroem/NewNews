@@ -47,5 +47,7 @@ namespace NewNews.MAUI.ViewModels
         {
             await LoadMoreNews(SearchQuery ?? "nyheter");
         }
+
+
     }
 }

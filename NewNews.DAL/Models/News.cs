@@ -15,5 +15,8 @@ namespace NewNews.DAL.Models
         [ObservableProperty]
         private bool isExpanded;
 
+        [ObservableProperty]
+        private double webViewHeight = 1;
+
     }
 }

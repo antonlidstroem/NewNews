@@ -45,5 +45,32 @@ namespace NewNews.MAUI.ViewModels
             await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
         }
 
+        private double webViewHeight;
+        public double WebViewHeight
+        {
+            get => webViewHeight;
+            set => SetProperty(ref webViewHeight, value);
+        }
+
+        //[RelayCommand]
+        //private async Task WebViewNavigated((News article, WebView webView) param)
+        //{
+        //    var (article, webView) = param;
+        //    if (article == null || webView == null) return;
+
+        //    try
+        //    {
+        //        var heightString = await webView.EvaluateJavaScriptAsync("document.body.scrollHeight.toString()");
+        //        if (double.TryParse(heightString, out double height))
+        //        {
+        //            article.WebViewHeight = height;
+        //        }
+        //    }
+        //    catch { }
+        //}
+
+
+
+
     }
 }
