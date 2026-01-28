@@ -10,8 +10,8 @@
 
         <HorizontalStackLayout Grid.Row="0" Padding="2" Spacing="10" HorizontalOptions="Center">
             <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
-            <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}"/>
-            <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}"/>
+            <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+                <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
 
         </HorizontalStackLayout>
 
@@ -62,11 +62,13 @@
 
                             <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
                                 <HorizontalStackLayout Spacing="5">
-                                    <Button Text="✕ Stäng artikel" FontSize="14" WidthRequest="32" HeightRequest="32"
+                                    <Button Text="✕" FontSize="14" WidthRequest="32" HeightRequest="32"
                                         BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
+                                            Style="{StaticResource ArticleButtonStyle}"
                                         Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding .}" />
-                                    <Button Text="🌐 Läs originalet" FontSize="12" Padding="6,2"
+                                    <Button Text="{Binding Source}" FontSize="12" Padding="6,2"
+                                            Style="{StaticResource ArticleButtonStyle}"
                                         Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
                                         CommandParameter="{Binding Url}" />
                                 </HorizontalStackLayout>
