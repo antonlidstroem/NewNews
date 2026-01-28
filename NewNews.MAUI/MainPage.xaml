@@ -6,118 +6,38 @@
              x:Class="NewNews.MAUI.MainPage"
              x:Name="RootPage">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,*">
 
-        <HorizontalStackLayout Grid.Row="0" Padding="2" Spacing="10" HorizontalOptions="Center">
+        <!-- Row 0: Sökfält och knappar -->
+        <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
             <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
             <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="❌" Padding="2" Command="{Binding ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
         </HorizontalStackLayout>
 
+        <!-- Row 1: Sparade sökord-knapp + språkval -->
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
-            <HorizontalStackLayout>
-                <Label Text="🌐" VerticalOptions="Center"/>
-                <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="..."/>
-            </HorizontalStackLayout>
-            <HorizontalStackLayout>
-                <!--<Label Text="⭐" VerticalOptions="Center"/>
-                <Picker ItemsSource="{Binding SavedKeywords}"
-                ItemDisplayBinding="{Binding Keyword}"
-                SelectedItem="{Binding SelectedSavedSearch}"
-                Title="..."/>-->
-                <Button Text="⭐" 
-                    Command="{Binding ToggleSavedKeywordsCommand}"
-                    Style="{StaticResource ArticleButtonStyle}"/>
-            </HorizontalStackLayout>
-            
-            <HorizontalStackLayout IsVisible="{Binding IsCategoryVisible}">
-                <Label Text="🏷️" VerticalOptions="Center"/>
-                <Picker ItemsSource="{Binding Categories}"  SelectedItem="{Binding SelectedCategory}" Title="..."/>
-
-                
-            </HorizontalStackLayout>
-
+            <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="🌐" Command="{Binding ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Label Text="{Binding LanguageDisplayName}" VerticalOptions="Center" FontAttributes="Bold"/>
         </HorizontalStackLayout>
 
-        <!-- Row 3: Sparade sökord som vertikal lista med swipe-to-delete -->
-        <CollectionView Grid.Row="3"
-                ItemsSource="{Binding SavedKeywords}"
+        <!-- Row 2: Språk CollectionView -->
+        <CollectionView Grid.Row="2"
+                ItemsSource="{Binding LanguageNames}"
                 SelectionMode="Single"
-                SelectionChanged="SavedKeywords_SelectionChanged"
-                HeightRequest="200"
-                ItemsLayout="VerticalList"
-                VerticalOptions="Start"
-                IsVisible="{Binding AreSavedKeywordsVisible}">
+                SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                IsVisible="{Binding IsLanguageCollectionVisible}"
+                VerticalOptions="Start">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:SavedSearch">
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems Mode="Execute">
-                                <SwipeItem Text="🗑️"
-                                   BackgroundColor="Red"
-                                   Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
-                                   CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-
-                        <Frame Padding="10" Margin="2"
-                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
-                       CornerRadius="8">
-                            <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Start"/>
-                        </Frame>
-                    </SwipeView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-
-
-
-
-        <!-- CollectionView ligger inuti SwipeView -->
-        <CollectionView Grid.Row="5" ItemsSource="{Binding Articles}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:News">
-                    <Border Style="{StaticResource ArticleFrameStyle}">
-                        <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
-                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
-                            <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
-                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
-                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                            <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
-                                TextColor="#888" Padding="0" HorizontalOptions="Start"
-                                Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
-                                IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                            <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
-                               IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-
-                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
-                                <HorizontalStackLayout Spacing="5">
-                                    <Button Text="✕" FontSize="14" WidthRequest="32" HeightRequest="32"
-                                        BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
-                                            Style="{StaticResource ArticleButtonStyle}"
-                                        Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
-                                        CommandParameter="{Binding .}" />
-                                    <Button Text="{Binding Source}" FontSize="12" Padding="6,2"
-                                            Style="{StaticResource ArticleButtonStyle}"
-                                        Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
-                                        CommandParameter="{Binding Url}" />
-                                </HorizontalStackLayout>
-
-                                <WebView Source="{Binding Url}" 
-                                         HeightRequest="{Binding WebViewHeight}" 
-                                         Navigated="WebView_Navigated"/>
-
-                            </VerticalStackLayout>
-
-                        </VerticalStackLayout>
-
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
-                                              CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
+                <DataTemplate x:DataType="x:String">
+                    <Border Padding="10" Margin="2" 
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+                        <Label Text="{Binding .}" 
+                       VerticalOptions="Center" 
+                       HorizontalOptions="Center" 
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
@@ -125,20 +45,88 @@
 
 
 
+        <!-- Row 3: Sparade sökord -->
+        <CollectionView Grid.Row="3"
+                        ItemsSource="{Binding SavedKeywords}"
+                        SelectionMode="Single"
+                        SelectionChanged="SavedKeywords_SelectionChanged"
+                        ItemsLayout="VerticalList"
+                        VerticalOptions="Start"
+                        IsVisible="{Binding AreSavedKeywordsVisible}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SavedSearch">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="🗑️"
+                                           BackgroundColor="Red"
+                                           Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.LeftItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="🗑️"
+                                           BackgroundColor="Red"
+                                           Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+
+                        <Border Padding="10" Margin="2"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+                            <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Row 4: Artiklar -->
+        <CollectionView Grid.Row="4" ItemsSource="{Binding Articles}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:News">
+                    <Border Style="{StaticResource ArticleFrameStyle}">
+                        <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+                            <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
+                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
+                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                                    TextColor="#888" Padding="0" HorizontalOptions="Start"
+                                    Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
+                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
+                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+
+                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Button Text="✕" FontSize="14" WidthRequest="32" HeightRequest="32"
+                                            BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
+                                            Style="{StaticResource ArticleButtonStyle}"
+                                            Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                            CommandParameter="{Binding .}" />
+                                    <Button Text="{Binding Source}" FontSize="12" Padding="6,2"
+                                            Style="{StaticResource ArticleButtonStyle}"
+                                            Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
+                                            CommandParameter="{Binding Url}" />
+                                </HorizontalStackLayout>
+
+                                <WebView Source="{Binding Url}" 
+                                         HeightRequest="{Binding WebViewHeight}" 
+                                         Navigated="WebView_Navigated"/>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
     </Grid>
 </ContentPage>
-
-<!--FÖR SWIPE-FUNKTION-->
-<!--<SwipeView Grid.Row="5">
-            <SwipeView.LeftItems>
-                <SwipeItems Mode="Execute">
-                    <SwipeItem Text="◀️ Föregående" BackgroundColor="LightGray" Command="{Binding PreviousSavedSearchCommand}"/>
-                </SwipeItems>
-            </SwipeView.LeftItems>
-            <SwipeView.RightItems>
-                <SwipeItems Mode="Execute">
-                    <SwipeItem Text="Nästa ▶️" BackgroundColor="LightGray" Command="{Binding NextSavedSearchCommand}"/>
-                </SwipeItems>
-            </SwipeView.RightItems>-->
-<!--</SwipeView>-->
-<!--FÖR SWIPE-FUNKTION-->

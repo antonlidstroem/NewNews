@@ -75,11 +75,14 @@ namespace NewNews.MAUI.ViewModels
         }
 
         [ObservableProperty]
-        private bool areSavedKeywordsVisible = true;
+        private bool areSavedKeywordsVisible = false;
 
         [RelayCommand]
         private void ToggleSavedKeywords()
         {
+            if (!AreSavedKeywordsVisible)
+                IsLanguageCollectionVisible = false;
+
             AreSavedKeywordsVisible = !AreSavedKeywordsVisible;
         }
 

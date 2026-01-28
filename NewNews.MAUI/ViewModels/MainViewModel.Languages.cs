@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
 {
-    public partial class MainViewModel
+    public partial class MainViewModel : BaseViewModel
     {
 
 
@@ -25,10 +27,17 @@ namespace NewNews.MAUI.ViewModels
     };
 
         // Dropdown-visning
-        public ObservableCollection<string> LanguageNames { get; }
+        //public ObservableCollection<string> LanguageNames { get; }
+        public ObservableCollection<string> LanguageNames { get; } = new ObservableCollection<string>(new string[]
+        {
+            "English", "Svenska", "Deutsch", "Español", "Français", "Italiano", "Nederlands", "Norsk", "Português", "Русский"
+        });
+
 
         [ObservableProperty]
-        private string selectedLanguage = "Swedish";
+        private string selectedLanguage = "Svenska";
+
+        public string LanguageDisplayName => $"{SelectedLanguage}";
 
 
         partial void OnSelectedLanguageChanged(string value)
@@ -36,8 +45,31 @@ namespace NewNews.MAUI.ViewModels
             if (AvailableLanguages.TryGetValue(value, out var langCode))
                 _newsService.Language = langCode;
 
+            IsLanguageCollectionVisible = false;
+
+            OnPropertyChanged(nameof(LanguageDisplayName));
             SearchNewsCommand.Execute(null);
             OnPropertyChanged(nameof(IsCategoryVisible));
         }
+
+        [ObservableProperty]
+        private bool isLanguageCollectionVisible = false; // default osynlig
+
+        [RelayCommand]
+        private void ToggleLanguageCollection()
+        {
+            if (!IsLanguageCollectionVisible)
+                AreSavedKeywordsVisible = false;
+
+            IsLanguageCollectionVisible = !IsLanguageCollectionVisible;
+        }
+
+        [RelayCommand]
+        private void SelectLanguage(string language)
+        {
+            SelectedLanguage = language;
+            IsLanguageCollectionVisible = false; // göm efter val
+        }
+
     }
 }
