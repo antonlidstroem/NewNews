@@ -11,6 +11,11 @@ public class NewsService
     public NewsService(HttpClient http)
     {
         _http = http;
+
+        if (!_http.DefaultRequestHeaders.Contains("User-Agent"))
+        {
+            _http.DefaultRequestHeaders.Add("User-Agent", "NewNewsApp/1.0");
+        }
     }
 
     // Hämta en "sida" nyheter med ett sökord (default: "nyheter")
