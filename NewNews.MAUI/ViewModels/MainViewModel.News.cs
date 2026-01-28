@@ -49,6 +49,11 @@ namespace NewNews.MAUI.ViewModels
             await LoadMoreNews(SearchQuery ?? "nyheter");
         }
 
+        [RelayCommand]
+        private void ClearSearch()
+        {
+            SearchQuery = string.Empty;
+        }
 
     }
 }

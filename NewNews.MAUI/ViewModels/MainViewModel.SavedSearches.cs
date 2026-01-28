@@ -5,10 +5,11 @@ using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
+using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
 {
-    public partial class MainViewModel
+    public partial class MainViewModel : BaseViewModel
     {
         public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
 
@@ -73,8 +74,16 @@ namespace NewNews.MAUI.ViewModels
             await LoadSavedKeywords();
         }
 
-       
+        [ObservableProperty]
+        private bool areSavedKeywordsVisible = true;
 
-        
+        [RelayCommand]
+        private void ToggleSavedKeywords()
+        {
+            AreSavedKeywordsVisible = !AreSavedKeywordsVisible;
+        }
+
+
+
     }
 }

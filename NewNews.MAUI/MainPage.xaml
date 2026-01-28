@@ -11,8 +11,8 @@
         <HorizontalStackLayout Grid.Row="0" Padding="2" Spacing="10" HorizontalOptions="Center">
             <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
             <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-                <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-
+            <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="❌" Padding="2" Command="{Binding ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
         </HorizontalStackLayout>
 
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
@@ -26,19 +26,52 @@
                 ItemDisplayBinding="{Binding Keyword}"
                 SelectedItem="{Binding SelectedSavedSearch}"
                 Title="..."/>
+                <Button Text="⭐" 
+                    Command="{Binding ToggleSavedKeywordsCommand}"
+                    Style="{StaticResource ArticleButtonStyle}"/>
             </HorizontalStackLayout>
+            
             <HorizontalStackLayout IsVisible="{Binding IsCategoryVisible}">
                 <Label Text="🏷️" VerticalOptions="Center"/>
                 <Picker ItemsSource="{Binding Categories}"  SelectedItem="{Binding SelectedCategory}" Title="..."/>
+
+                
             </HorizontalStackLayout>
 
         </HorizontalStackLayout>
 
-        <!-- Row 3: Picker för sparade sökord -->
-        <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5" VerticalOptions="Center">
-            <!--<Label Text="Sparade sökord:" VerticalOptions="Center"/>-->
+        <!-- Row 3: Sparade sökord som vertikal lista med swipe-to-delete -->
+        <CollectionView Grid.Row="3"
+                ItemsSource="{Binding SavedKeywords}"
+                SelectionMode="Single"
+                SelectionChanged="SavedKeywords_SelectionChanged"
+                HeightRequest="200"
+                ItemsLayout="VerticalList"
+                VerticalOptions="Start"
+                IsVisible="{Binding AreSavedKeywordsVisible}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SavedSearch">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="🗑️"
+                                   BackgroundColor="Red"
+                                   Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                   CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
 
-        </HorizontalStackLayout>
+                        <Frame Padding="10" Margin="2"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                       CornerRadius="8">
+                            <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Start"/>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
 
 
 

@@ -38,5 +38,19 @@ namespace NewNews.MAUI
             }
         }
 
+        private void SavedKeywords_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection.FirstOrDefault() is SavedSearch selected)
+            {
+                // Anropa samma funktion som när man väljer i dropdown
+                var vm = BindingContext as MainViewModel;
+                vm?.SearchByKeywordCommand.Execute(selected);
+
+                // Avmarkera direkt så man kan klicka igen
+                ((CollectionView)sender).SelectedItem = null;
+            }
+        }
+
+
     }
 }
