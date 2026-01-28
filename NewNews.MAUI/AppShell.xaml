@@ -10,5 +10,10 @@
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+    <Shell.TitleView>
+        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Padding="0,10,0,10">
+            <Image Source="newnews_logo3.png" HeightRequest="50" Aspect="AspectFit"/>
+        </HorizontalStackLayout>
+    </Shell.TitleView>
 
 </Shell>
