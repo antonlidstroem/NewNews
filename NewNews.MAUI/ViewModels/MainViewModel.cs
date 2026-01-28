@@ -243,7 +243,7 @@ namespace NewNews.MAUI.ViewModels
 
             _currentSavedIndex++;
             if (_currentSavedIndex >= SavedKeywords.Count)
-                _currentSavedIndex = 0; // loopa tillbaka till första
+                _currentSavedIndex = 0; 
 
             SelectSavedSearchByIndex(_currentSavedIndex);
         }
@@ -255,7 +255,7 @@ namespace NewNews.MAUI.ViewModels
 
             _currentSavedIndex--;
             if (_currentSavedIndex < 0)
-                _currentSavedIndex = SavedKeywords.Count - 1; // loopa till sista
+                _currentSavedIndex = SavedKeywords.Count - 1; 
 
             SelectSavedSearchByIndex(_currentSavedIndex);
         }

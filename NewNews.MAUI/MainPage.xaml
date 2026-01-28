@@ -53,12 +53,12 @@
         <!-- SwipeView wrap för hela CollectionView -->
         <SwipeView Grid.Row="5">
             <SwipeView.LeftItems>
-                <SwipeItems Mode="Reveal">
+                <SwipeItems Mode="Execute">
                     <SwipeItem Text="◀️ Föregående" BackgroundColor="LightGray" Command="{Binding PreviousSavedSearchCommand}"/>
                 </SwipeItems>
             </SwipeView.LeftItems>
             <SwipeView.RightItems>
-                <SwipeItems Mode="Reveal">
+                <SwipeItems Mode="Execute">
                     <SwipeItem Text="Nästa ▶️" BackgroundColor="LightGray" Command="{Binding NextSavedSearchCommand}"/>
                 </SwipeItems>
             </SwipeView.RightItems>
