@@ -29,6 +29,7 @@ namespace NewNews.MAUI.ViewModels
             _keywordService = keywordService;
 
             LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
+            _ = LoadSavedKeywords();
         }
 
 
