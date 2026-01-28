@@ -1,0 +1,110 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using NewNews.DAL.Models;
+
+namespace NewNews.MAUI.ViewModels
+{
+    public partial class MainViewModel
+    {
+        public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
+
+        private async Task LoadSavedKeywords()
+        {
+            SavedKeywords.Clear();
+            var keywords = await _keywordService.GetAllKeywordsAsync();
+            foreach (var k in keywords)
+                SavedKeywords.Add(k);
+        }
+
+        [RelayCommand]
+        private async Task SearchByKeyword(SavedSearch search)
+        {
+            if (search == null) return;
+
+            SearchQuery = search.Keyword;
+            await SearchNews();
+        }
+
+
+        [RelayCommand]
+        private async Task SaveSearch()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+                return;
+
+            string? categoryToSave = IsCategoryVisible && SelectedCategory != "Allt" ? SelectedCategory : null;
+
+            await _keywordService.AddKeywordAsync(SearchQuery, SelectedLanguage, categoryToSave);
+
+            // Ladda om sparade sökningar
+            await LoadSavedKeywords();
+        }
+
+        [ObservableProperty]
+        private SavedSearch? selectedSavedSearch;
+
+        partial void OnSelectedSavedSearchChanged(SavedSearch? value)
+        {
+            if (value == null) return;
+
+            SearchQuery = value.Keyword;
+            SelectedLanguage = value.Language;
+
+            if (!string.IsNullOrWhiteSpace(value.Category))
+                SelectedCategory = value.Category;
+            else
+                SelectedCategory = "Allt";
+
+            _ = SearchNews();
+        }
+
+
+
+        [RelayCommand]
+        private async Task DeleteSavedSearch(SavedSearch search)
+        {
+            if (search == null) return;
+
+            await _keywordService.DeleteKeywordAsync(search.Id);
+            await LoadSavedKeywords();
+        }
+
+        private int _currentSavedIndex = 0;
+
+        [RelayCommand]
+        private void NextSavedSearch()
+        {
+            if (SavedKeywords.Count == 0) return;
+
+            _currentSavedIndex++;
+            if (_currentSavedIndex >= SavedKeywords.Count)
+                _currentSavedIndex = 0;
+
+            SelectSavedSearchByIndex(_currentSavedIndex);
+        }
+
+        [RelayCommand]
+        private void PreviousSavedSearch()
+        {
+            if (SavedKeywords.Count == 0) return;
+
+            _currentSavedIndex--;
+            if (_currentSavedIndex < 0)
+                _currentSavedIndex = SavedKeywords.Count - 1;
+
+            SelectSavedSearchByIndex(_currentSavedIndex);
+        }
+
+        private void SelectSavedSearchByIndex(int index)
+        {
+            if (index < 0 || index >= SavedKeywords.Count) return;
+
+            var saved = SavedKeywords[index];
+            SelectedSavedSearch = saved;
+        }
+    }
+}
