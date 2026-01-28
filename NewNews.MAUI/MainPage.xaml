@@ -8,40 +8,36 @@
 
     <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*">
 
-        <!-- Row 1: Sökfält -->
-        <HorizontalStackLayout Grid.Row="1" Spacing="5">
-            <Entry Placeholder="" Text="{Binding SearchQuery}" HorizontalOptions="FillAndExpand"/>
-            <Button Text="🔍" Command="{Binding SearchNewsCommand}"/>
+        <HorizontalStackLayout Grid.Row="0" Padding="2" Spacing="10" HorizontalOptions="Center">
+            <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
+            <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}"/>
+            <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}"/>
+
         </HorizontalStackLayout>
 
-        <!-- Row 2: Språk / kategori / spara sökning -->
-        <HorizontalStackLayout Grid.Row="2" Spacing="10">
-
-            <!-- Språk -->
-            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                <!--<Label Text="Språk:" VerticalOptions="Center"/>-->
-                <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="🌐"/>
+        <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
+            <HorizontalStackLayout>
+                <Label Text="🌐" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="..."/>
             </HorizontalStackLayout>
-
-            <!-- Kategori (endast för engelska) -->
-            <HorizontalStackLayout Spacing="5" VerticalOptions="Center" IsVisible="{Binding IsCategoryVisible}">
-                <!--<Label Text="Kategori:" VerticalOptions="Center"/>-->
-                <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="🏷️"/>
+            <HorizontalStackLayout>
+                <Label Text="⭐" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding SavedKeywords}"
+                ItemDisplayBinding="{Binding Keyword}"
+                SelectedItem="{Binding SelectedSavedSearch}"
+                Title="..."/>
             </HorizontalStackLayout>
-
-            <!-- Spara sökning -->
-            <Button Text="💾" Command="{Binding SaveSearchCommand}"/>
+            <HorizontalStackLayout IsVisible="{Binding IsCategoryVisible}">
+                <Label Text="🏷️" VerticalOptions="Center"/>
+                <Picker ItemsSource="{Binding Categories}"  SelectedItem="{Binding SelectedCategory}" Title="..."/>
+            </HorizontalStackLayout>
 
         </HorizontalStackLayout>
 
         <!-- Row 3: Picker för sparade sökord -->
         <HorizontalStackLayout Grid.Row="3" Spacing="5" Padding="0,5,0,5" VerticalOptions="Center">
             <!--<Label Text="Sparade sökord:" VerticalOptions="Center"/>-->
-            <Picker ItemsSource="{Binding SavedKeywords}"
-                    ItemDisplayBinding="{Binding Keyword}"
-                    SelectedItem="{Binding SelectedSavedSearch}"
-                    Title="⭐"
-                    HorizontalOptions="FillAndExpand"/>
+
         </HorizontalStackLayout>
 
 

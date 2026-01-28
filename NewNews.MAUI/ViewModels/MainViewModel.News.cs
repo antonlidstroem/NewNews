@@ -22,6 +22,7 @@ namespace NewNews.MAUI.ViewModels
             if (IsBusy || !hasMoreItems) return;
             IsBusy = true;
 
+            
             string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
 
             var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query, categoryFilter);
