@@ -21,11 +21,11 @@
                 <Picker ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding SelectedLanguage}" Title="..."/>
             </HorizontalStackLayout>
             <HorizontalStackLayout>
-                <Label Text="⭐" VerticalOptions="Center"/>
+                <!--<Label Text="⭐" VerticalOptions="Center"/>
                 <Picker ItemsSource="{Binding SavedKeywords}"
                 ItemDisplayBinding="{Binding Keyword}"
                 SelectedItem="{Binding SelectedSavedSearch}"
-                Title="..."/>
+                Title="..."/>-->
                 <Button Text="⭐" 
                     Command="{Binding ToggleSavedKeywordsCommand}"
                     Style="{StaticResource ArticleButtonStyle}"/>

@@ -48,8 +48,13 @@ namespace NewNews.MAUI
 
                 // Avmarkera direkt så man kan klicka igen
                 ((CollectionView)sender).SelectedItem = null;
+
+                // Fäll ihop listan efter val
+                if (vm != null)
+                    vm.AreSavedKeywordsVisible = false;
             }
         }
+
 
 
     }
