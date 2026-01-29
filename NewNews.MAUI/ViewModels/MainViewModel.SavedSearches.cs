@@ -80,8 +80,9 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleSavedKeywords()
         {
-            if (!AreSavedKeywordsVisible)
-                IsLanguageCollectionVisible = false;
+            IsLanguageCollectionVisible = false;
+            IsCountryCollectionVisible = false;
+            IsSourceCollectionVisible = false;
 
             AreSavedKeywordsVisible = !AreSavedKeywordsVisible;
         }

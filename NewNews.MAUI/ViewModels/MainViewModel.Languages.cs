@@ -28,10 +28,11 @@ namespace NewNews.MAUI.ViewModels
 
         // Dropdown-visning
         //public ObservableCollection<string> LanguageNames { get; }
-        public ObservableCollection<string> LanguageNames { get; } = new ObservableCollection<string>(new string[]
-        {
-            "English", "Svenska", "Deutsch", "Español", "Français", "Italiano", "Nederlands", "Norsk", "Português", "Русский"
-        });
+        public ObservableCollection<string> LanguageNames { get; } = new ObservableCollection<string>
+            {
+                "Allt", // lägg till denna som default/null
+                "English", "Svenska", "Deutsch", "Español", "Français", "Italiano", "Nederlands", "Norsk", "Português", "Русский"
+            };
 
 
         [ObservableProperty]
@@ -61,8 +62,9 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleLanguageCollection()
         {
-            if (!IsLanguageCollectionVisible)
-                AreSavedKeywordsVisible = false;
+            IsCountryCollectionVisible = false;
+            IsSourceCollectionVisible = false;
+            AreSavedKeywordsVisible = false;
 
             IsLanguageCollectionVisible = !IsLanguageCollectionVisible;
         }

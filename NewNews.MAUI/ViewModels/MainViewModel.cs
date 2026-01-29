@@ -28,9 +28,16 @@ namespace NewNews.MAUI.ViewModels
         {
             _newsService = newsService;
             _keywordService = keywordService;
-
-            CountryNames = new ObservableCollection<string>(AvailableCountries.Keys);
+     
             //LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
+
+            CountryNames = new ObservableCollection<string>();
+            CountryNames.Add("Allt");
+
+            foreach (var country in AvailableCountries.Keys)
+            {
+                CountryNames.Add(country);
+            }
 
         }
 

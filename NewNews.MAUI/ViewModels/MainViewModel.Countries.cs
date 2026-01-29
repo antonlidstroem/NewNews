@@ -29,12 +29,14 @@ namespace NewNews.MAUI.ViewModels
 
         public ObservableCollection<string> CountryNames { get; }
 
-
         [RelayCommand]
         private void ToggleCountryCollection()
         {
-            IsCountryCollectionVisible = !IsCountryCollectionVisible;
+            IsLanguageCollectionVisible = false;
             IsSourceCollectionVisible = false;
+            AreSavedKeywordsVisible = false;
+
+            IsCountryCollectionVisible = !IsCountryCollectionVisible;
         }
 
         partial void OnSelectedCountryChanged(string value)

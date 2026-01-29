@@ -5,7 +5,6 @@ using NewNews.MAUI.Services;
 public class NewsService : INewsService
 {
     private readonly INewsApiClient _client;
-    public string Language { get; set; } = "sv";
 
     public NewsService(INewsApiClient client)
     {
@@ -16,55 +15,50 @@ public class NewsService : INewsService
     int page,
     int pageSize,
     string query,
-    string language,
+    string? language,
     string? category,
     string? country,
     string? sourceId)
     {
-        List<News> result = new();
+        List<ArticleDto> articles = new();
 
         if (!string.IsNullOrEmpty(country))
         {
-            // Land är satt → trumfa språk, använd top-headlines
+            // Hämta artiklar från landet (top-headlines)
             var topResponse = await _client.GetTopHeadlinesByCountryAsync(country, query, page, pageSize);
 
             if (topResponse?.Articles != null)
-            {
-                result = topResponse.Articles.Select(a => new News
-                {
-                    Title = a.Title,
-                    Description = a.Description,
-                    Url = a.Url,
-                    ImageUrl = a.UrlToImage,
-                    Source = a.Source?.Name,
-                    Content = a.Content,
-                    PublishedAt = a.PublishedAt
-                }).ToList();
-            }
+                articles = topResponse.Articles;
         }
         else
         {
-            // Land är inte satt → använd everything med valt språk
+            // Everything är primärt
             var everythingResponse = await _client.GetEverythingAsync(query, language, page, pageSize);
 
             if (everythingResponse?.Articles != null)
-            {
-                result = everythingResponse.Articles.Select(a => new News
-                {
-                    Title = a.Title,
-                    Description = a.Description,
-                    Url = a.Url,
-                    ImageUrl = a.UrlToImage,
-                    Source = a.Source?.Name,
-                    Content = a.Content,
-                    PublishedAt = a.PublishedAt
-                }).ToList();
-            }
+                articles = everythingResponse.Articles;
         }
+
+        // Manuella filter
+        if (!string.IsNullOrEmpty(sourceId))
+            articles = articles.Where(a => string.Equals(a.Source?.Id, sourceId, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        var result = articles.Select(a => new News
+        {
+            Title = a.Title,
+            Description = a.Description,
+            Url = a.Url,
+            ImageUrl = a.UrlToImage,
+            Source = a.Source?.Name,
+            Content = a.Content,
+            PublishedAt = a.PublishedAt
+        }).ToList();
 
         return result;
     }
 
+
+    
 
     public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
     {

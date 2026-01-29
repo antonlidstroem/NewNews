@@ -19,22 +19,13 @@ namespace NewNews.MAUI.ViewModels
         [ObservableProperty] private SourceDto? selectedSource;
 
         [RelayCommand]
-        private async Task ToggleSourceCollection()
+        private void ToggleSourceCollection()
         {
-            if (SelectedCountry == null)
-                return;
+            IsLanguageCollectionVisible = false;
+            IsCountryCollectionVisible = false;
+            AreSavedKeywordsVisible = false;
 
             IsSourceCollectionVisible = !IsSourceCollectionVisible;
-
-            if (Sources.Count == 0)
-            {
-                var countryCode = AvailableCountries[SelectedCountry];
-                var sources = await _newsService.GetSourcesByCountryAsync(countryCode);
-
-                Sources.Clear();
-                foreach (var s in sources)
-                    Sources.Add(s);
-            }
         }
         partial void OnSelectedSourceChanged(SourceDto value)
         {

@@ -25,11 +25,19 @@ namespace NewNews.MAUI.ViewModels
             string? categoryFilter =
                 SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
 
-            string? countryCode =
-                string.IsNullOrWhiteSpace(SelectedCountry) ? null : AvailableCountries[SelectedCountry];
+            string? countryCode = SelectedCountry == "Allt" || string.IsNullOrWhiteSpace(SelectedCountry)
+            ? null
+            : AvailableCountries[SelectedCountry];
+
+            string? languageCode = SelectedLanguage == "Allt" || string.IsNullOrWhiteSpace(SelectedLanguage)
+                ? null
+                : CurrentLanguageCode;
+
+            string? sourceId = SelectedSource?.Id; // null är redan OK
 
 
-            string? sourceId = SelectedSource?.Id;
+
+
 
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,

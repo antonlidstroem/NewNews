@@ -34,10 +34,16 @@
 
 
 
-            <Button Text="{Binding SelectedCountry, StringFormat=🌍 {0}}" Command="{Binding ToggleCountryCollectionCommand}" Style="{StaticResource ArticleButtonStyle}" />
+            <Button Text="🌍" Command="{Binding ToggleCountryCollectionCommand}" Style="{StaticResource ArticleButtonStyle}" />
             <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
                     Command="{Binding ToggleSourceCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+
+            <Button Text="Kategori"
+                    IsVisible="{Binding IsCategoryVisible}"
+                    Command="{Binding OnCategoryChangedCommand}"
+                    Style="{StaticResource ArticleButtonStyle}"/>
+
 
         </HorizontalStackLayout>
 
@@ -105,34 +111,17 @@
                         SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
                         IsVisible="{Binding IsCountryCollectionVisible}"
                             VerticalOptions="Start">
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate x:DataType="x:String">
-                                            <Border Padding="10" Margin="2"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2"
                             BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
-                                            <Label Text="{Binding .}" 
+                            <Label Text="{Binding .}" 
                                VerticalOptions="Center" 
-                               HorizontalOptions="Center"/>     
+                               HorizontalOptions="Center"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <!--<CollectionView 
-
-  
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="x:String">
-                        <Border Padding="10" Margin="2" 
-        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
-                            <Label Text="{Binding .}" 
-           VerticalOptions="Center" 
-           HorizontalOptions="Center" 
-           TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>-->
 
 
             <CollectionView ItemsSource="{Binding Sources}"
