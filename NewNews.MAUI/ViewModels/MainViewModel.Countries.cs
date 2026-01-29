@@ -48,6 +48,13 @@ namespace NewNews.MAUI.ViewModels
             _ = SearchNews();
         }
 
+        [RelayCommand]
+        private void SelectCountry(string country)
+        {
+            SelectedCountry = country;
+            IsCountryCollectionVisible = false; // stäng dropdown
+        }
+
 
     }
 }

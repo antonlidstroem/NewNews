@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http.Json;
-using System.Text;
+﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using NewNews.MAUI.Dto;
 
@@ -25,10 +22,7 @@ namespace NewNews.MAUI.Services
         }
 
         public async Task<NewsApiResponseDto?> GetEverythingAsync(
-        string query,
-        string language,
-        int page,
-        int pageSize)
+            string query, string language, int page, int pageSize)
         {
             var url =
                 $"https://newsapi.org/v2/everything" +
@@ -42,18 +36,22 @@ namespace NewNews.MAUI.Services
             return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
         }
 
-        public async Task<NewsApiResponseDto?> GetTopHeadlinesAsync(string url) =>
-        await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+        public async Task<NewsApiResponseDto?> GetTopHeadlinesByCountryAsync(
+            string country, string? query, int page, int pageSize)
+        {
+            var url = $"https://newsapi.org/v2/top-headlines?country={country}&page={page}&pageSize={pageSize}&apiKey={_apiKey}";
 
-        public async Task<SourcesResponseDto?> GetSourcesAsync(string url) =>
-            await _http.GetFromJsonAsync<SourcesResponseDto>(url);
+            if (!string.IsNullOrEmpty(query))
+                url += $"&q={Uri.EscapeDataString(query)}";
+
+            return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+        }
 
         public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
         {
             var url = $"https://newsapi.org/v2/sources?country={country}&apiKey={_apiKey}";
-            var response = await GetSourcesAsync(url);
+            var response = await _http.GetFromJsonAsync<SourcesResponseDto>(url);
             return response?.Sources ?? new List<SourceDto>();
         }
-
     }
 }

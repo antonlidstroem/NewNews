@@ -14,8 +14,8 @@
        HorizontalOptions="Center"
        VerticalOptions="Center"/>
 
-        
-         
+
+
         <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
             <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
             <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
@@ -28,7 +28,7 @@
             <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="🌐" Command="{Binding ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Label Text="{Binding LanguageDisplayName}" VerticalOptions="Center" FontAttributes="Bold"/>
-            <Button Text="🌍" Command="{Binding ToggleCountryCollectionCommand}" />
+            <Button Text="{Binding SelectedCountry, StringFormat=🌍 {0}}" Command="{Binding ToggleCountryCollectionCommand}" />
             <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
                     Command="{Binding ToggleSourceCollectionCommand}" />
@@ -93,15 +93,25 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
+
             <CollectionView ItemsSource="{Binding CountryNames}"
-                IsVisible="{Binding IsCountryCollectionVisible}"
-                SelectedItem="{Binding SelectedCountry}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding .}" Padding="10"/>
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
+                        IsVisible="{Binding IsCountryCollectionVisible}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="10" Margin="2"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+                                            <Label Text="{Binding .}" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center"/>     
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+
+
 
             <CollectionView ItemsSource="{Binding Sources}"
                 IsVisible="{Binding IsSourceCollectionVisible}"
