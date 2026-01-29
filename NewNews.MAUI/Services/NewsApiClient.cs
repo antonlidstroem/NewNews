@@ -22,19 +22,24 @@ namespace NewNews.MAUI.Services
         }
 
         public async Task<NewsApiResponseDto?> GetEverythingAsync(
-            string query, string language, int page, int pageSize)
+    string query, string? language, int page, int pageSize, string? sourceId = null, string? category = null)
         {
-            var url =
-                $"https://newsapi.org/v2/everything" +
-                $"?q={Uri.EscapeDataString(query)}" +
-                $"&language={language}" +
-                $"&sortBy=publishedAt" +
-                $"&page={page}" +
+            var url = $"https://newsapi.org/v2/everything?q={Uri.EscapeDataString(query)}" +
+                $"&sortBy=publishedAt&page={page}" +
                 $"&pageSize={pageSize}" +
                 $"&apiKey={_apiKey}";
 
+            if (!string.IsNullOrEmpty(language))
+                url += $"&language={language}";
+
+            if (!string.IsNullOrEmpty(sourceId))
+                url += $"&sources={sourceId}";
+
+            // category stöds inte i everything-endpoint, så vi kan ignorera det här
+
             return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
         }
+
 
         public async Task<NewsApiResponseDto?> GetTopHeadlinesByCountryAsync(
             string country, string? query, int page, int pageSize)

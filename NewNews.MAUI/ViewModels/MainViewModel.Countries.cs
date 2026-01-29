@@ -39,14 +39,29 @@ namespace NewNews.MAUI.ViewModels
 
         partial void OnSelectedCountryChanged(string value)
         {
+            if (string.IsNullOrEmpty(value))
+                return;
+
+            // Stäng dropdown
             IsCountryCollectionVisible = false;
+
+            // Visa knapp för källor
             IsSourceButtonVisible = true;
 
+            // Nollställ vald källa
             SelectedSource = null;
             Sources.Clear();
 
-            _ = SearchNews();
+            // Reset paginering
+            currentPage = 1;
+            hasMoreItems = true;
+
+            // Töm artiklar och starta ny sökning
+            Articles.Clear();
+
+            _ = SearchNews(); // eller LoadMoreNews direkt
         }
+
 
         [RelayCommand]
         private void SelectCountry(string country)

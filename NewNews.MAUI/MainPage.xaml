@@ -26,12 +26,18 @@
 
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
             <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
+            <!--Hide languages to be replaced by country and source-->
             <Button Text="🌐" Command="{Binding ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Label Text="{Binding LanguageDisplayName}" VerticalOptions="Center" FontAttributes="Bold"/>
-            <Button Text="{Binding SelectedCountry, StringFormat=🌍 {0}}" Command="{Binding ToggleCountryCollectionCommand}" />
+
+
+
+
+            <Button Text="{Binding SelectedCountry, StringFormat=🌍 {0}}" Command="{Binding ToggleCountryCollectionCommand}" Style="{StaticResource ArticleButtonStyle}" />
             <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
-                    Command="{Binding ToggleSourceCollectionCommand}" />
+                    Command="{Binding ToggleSourceCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
 
         </HorizontalStackLayout>
 

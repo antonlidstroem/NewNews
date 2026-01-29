@@ -26,7 +26,8 @@ namespace NewNews.MAUI.ViewModels
                 SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
 
             string? countryCode =
-                SelectedCountry != null ? AvailableCountries[SelectedCountry] : null;
+                string.IsNullOrWhiteSpace(SelectedCountry) ? null : AvailableCountries[SelectedCountry];
+
 
             string? sourceId = SelectedSource?.Id;
 
