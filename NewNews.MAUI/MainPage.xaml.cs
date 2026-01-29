@@ -9,7 +9,13 @@ namespace NewNews.MAUI
         public MainPage(MainViewModel vm)
         {
             InitializeComponent();
-            BindingContext = vm;        
+            BindingContext = vm;
+            //BindingContext = vm ?? new MainViewModelTest();
+        }
+
+        public class MainViewModelTest
+        {
+            public string Title => "Hej, världen!";
         }
 
         protected override async void OnAppearing()
@@ -19,12 +25,13 @@ namespace NewNews.MAUI
             if (BindingContext is MainViewModel vm)
             {
                 //await vm.LoadMoreNews();
+                await vm.EnsureInitializedAsync();
             }
         }
 
         private async void WebView_Navigated(object sender, WebNavigatedEventArgs e)
         {
-            if (sender is WebView webView && webView.BindingContext is News article)
+            if (sender is WebView webView && webView.BindingContext is ArticleViewModel article)
             {
                 try
                 {
@@ -37,6 +44,7 @@ namespace NewNews.MAUI
                 catch { }
             }
         }
+
 
         private void SavedKeywords_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

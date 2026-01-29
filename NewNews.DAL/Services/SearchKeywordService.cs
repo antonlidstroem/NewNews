@@ -13,8 +13,14 @@ namespace NewNews.DAL.Services
         public SearchKeywordService(string dbPath)
         {
             _db = new SQLiteAsyncConnection(dbPath);
-            _db.CreateTableAsync<SavedSearch>();
+
         }
+
+        public async Task InitAsync()
+        {
+            _db.CreateTableAsync<SavedSearch>().Wait();
+        }
+
 
         public Task<List<SavedSearch>> GetAllKeywordsAsync()
         {

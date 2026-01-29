@@ -37,14 +37,17 @@ namespace NewNews.MAUI.ViewModels
         [ObservableProperty]
         private string selectedLanguage = "Svenska";
 
+        private string CurrentLanguageCode =>
+    AvailableLanguages.TryGetValue(SelectedLanguage, out var code)
+        ? code
+        : "sv";
+
+
         public string LanguageDisplayName => $"{SelectedLanguage}";
 
 
         partial void OnSelectedLanguageChanged(string value)
         {
-            if (AvailableLanguages.TryGetValue(value, out var langCode))
-                _newsService.Language = langCode;
-
             IsLanguageCollectionVisible = false;
 
             OnPropertyChanged(nameof(LanguageDisplayName));

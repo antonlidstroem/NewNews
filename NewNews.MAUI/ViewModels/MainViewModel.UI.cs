@@ -11,17 +11,17 @@ namespace NewNews.MAUI.ViewModels
 
 
         [RelayCommand]
-        private void ToggleNewsExpanded(News article)
+        private void ToggleNewsExpanded(ArticleViewModel article)
         {
             if (article == null) return;
 
-            // Om du vill att bara en artikel kan vara öppen åt gången:
             foreach (var a in Articles)
                 if (a != article)
                     a.IsExpanded = false;
 
             article.IsExpanded = !article.IsExpanded;
         }
+
 
         [RelayCommand]
         private async Task SourceTapped(string? url)

@@ -33,13 +33,15 @@ namespace NewNews.MAUI.ViewModels
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,
                 pageSize,
-                query,
+                SearchQuery ?? "nyheter",
+                CurrentLanguageCode,
                 categoryFilter,
                 countryCode,
                 sourceId);
 
+
             foreach (var item in news)
-                Articles.Add(item);
+                Articles.Add(new ArticleViewModel(item));
 
             if (news.Count == 0)
                 hasMoreItems = false;

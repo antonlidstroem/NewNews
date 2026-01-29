@@ -1,12 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewNews.DAL.Services;
+using NewNews.MAUI.Services;
 using NewNews.MAUI.ViewModels;
+
 
 
 namespace NewNews.MAUI
 {
-    
+
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
@@ -20,24 +24,41 @@ namespace NewNews.MAUI
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // SQLite-databas
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "searchkeywords.db3");
-            builder.Services.AddSingleton(new SearchKeywordService(dbPath));
+            // Lägg till appsettings.json
+            builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            // Registrera NewsService med HttpClient
-            builder.Services.AddHttpClient<NewsService>(client =>
+            // SQLite-databas
+            builder.Services.AddSingleton<SearchKeywordService>(sp =>
+            {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "searchkeywords.db3");
+                return new SearchKeywordService(dbPath);
+            });
+
+
+
+
+            // Registrera NewsApiClient med HttpClient
+            builder.Services.AddHttpClient<INewsApiClient, NewsApiClient>(client =>
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
             });
 
+            // Registrera NewsService
+            builder.Services.AddSingleton<INewsService, NewsService>();
+
             // Registrera MainViewModel som singleton
             builder.Services.AddSingleton<MainViewModel>();
 
-#if DEBUG
+            builder.Services.AddSingleton<MainPage>();
+
+
+            #if DEBUG
             builder.Logging.AddDebug();
-#endif
+            #endif
 
             return builder.Build();
         }
     }
+
 }
+
