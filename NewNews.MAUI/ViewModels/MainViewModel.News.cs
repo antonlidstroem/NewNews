@@ -22,26 +22,33 @@ namespace NewNews.MAUI.ViewModels
             if (IsBusy || !hasMoreItems) return;
             IsBusy = true;
 
-            
-            string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
+            string? categoryFilter =
+                SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
 
-            var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query, categoryFilter);
+            string? countryCode =
+                SelectedCountry != null ? AvailableCountries[SelectedCountry] : null;
+
+            string? sourceId = SelectedSource?.Id;
+
+            var news = await _newsService.GetNewsPageAsync(
+                currentPage,
+                pageSize,
+                query,
+                categoryFilter,
+                countryCode,
+                sourceId);
 
             foreach (var item in news)
                 Articles.Add(item);
 
             if (news.Count == 0)
-            {
                 hasMoreItems = false;
-            }
             else
-            {
                 currentPage++;
-            }
-
 
             IsBusy = false;
         }
+
 
         [RelayCommand]
         public async Task LoadMoreNewsCommand()

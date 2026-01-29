@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:NewNews.MAUI.ViewModels"
              xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
+             xmlns:dto="clr-namespace:NewNews.MAUI.Dto"
              x:DataType="vm:MainViewModel"
              x:Class="NewNews.MAUI.MainPage"
              x:Name="RootPage">
@@ -21,66 +22,95 @@
             <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="🌐" Command="{Binding ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Label Text="{Binding LanguageDisplayName}" VerticalOptions="Center" FontAttributes="Bold"/>
+            <Button Text="🌍" Command="{Binding ToggleCountryCollectionCommand}" />
+            <Button Text="📰"
+                    IsVisible="{Binding IsSourceButtonVisible}"
+                    Command="{Binding ToggleSourceCollectionCommand}" />
+
         </HorizontalStackLayout>
 
-        <!-- Row 2: Språk CollectionView -->
-        <CollectionView Grid.Row="2"
+        <HorizontalStackLayout Grid.Row="2">
+            <!-- Språk CollectionView -->
+            <CollectionView 
                 ItemsSource="{Binding LanguageNames}"
                 SelectionMode="Single"
                 SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
                 IsVisible="{Binding IsLanguageCollectionVisible}"
                 VerticalOptions="Start">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="x:String">
-                    <Border Padding="10" Margin="2" 
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2" 
                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
-                        <Label Text="{Binding .}" 
+                            <Label Text="{Binding .}" 
                        VerticalOptions="Center" 
                        HorizontalOptions="Center" 
                        TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
 
 
-        <!-- Row 3: Sparade sökord -->
-        <CollectionView Grid.Row="3"
+            <!-- Sparade sökord -->
+            <CollectionView 
                         ItemsSource="{Binding SavedKeywords}"
                         SelectionMode="Single"
                         SelectionChanged="SavedKeywords_SelectionChanged"
                         ItemsLayout="VerticalList"
                         VerticalOptions="Start"
                         IsVisible="{Binding AreSavedKeywordsVisible}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:SavedSearch">
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems Mode="Execute">
-                                <SwipeItem Text="🗑️"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SavedSearch">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="🗑️"
                                            BackgroundColor="Red"
                                            Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                            CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-                        <SwipeView.LeftItems>
-                            <SwipeItems Mode="Execute">
-                                <SwipeItem Text="🗑️"
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="🗑️"
                                            BackgroundColor="Red"
                                            Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                            CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.LeftItems>
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
 
-                        <Border Padding="10" Margin="2"
+                            <Border Padding="10" Margin="2"
                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
-                            <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Center"/>
-                        </Border>
-                    </SwipeView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView ItemsSource="{Binding CountryNames}"
+                IsVisible="{Binding IsCountryCollectionVisible}"
+                SelectedItem="{Binding SelectedCountry}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding .}" Padding="10"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView ItemsSource="{Binding Sources}"
+                IsVisible="{Binding IsSourceCollectionVisible}"
+                SelectedItem="{Binding SelectedSource}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:SourceDto">
+                        <Label Text="{Binding Name}" Padding="10"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+        </HorizontalStackLayout>
 
         <!-- Row 4: Artiklar -->
         <CollectionView Grid.Row="4" ItemsSource="{Binding Articles}" SelectionMode="None">

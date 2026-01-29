@@ -6,14 +6,14 @@ using SQLite;
 
 namespace NewNews.DAL.Services
 {
-    public class SearchKeywordService
+    public class SearchKeywordService : ISearchKeywordService
     {
         private readonly SQLiteAsyncConnection _db;
 
         public SearchKeywordService(string dbPath)
         {
             _db = new SQLiteAsyncConnection(dbPath);
-            _db.CreateTableAsync<SavedSearch>().Wait();
+            _db.CreateTableAsync<SavedSearch>();
         }
 
         public Task<List<SavedSearch>> GetAllKeywordsAsync()
@@ -40,8 +40,5 @@ namespace NewNews.DAL.Services
         {
             return _db.DeleteAsync<SavedSearch>(id);
         }
-
-
-
     }
 }

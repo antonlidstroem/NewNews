@@ -7,6 +7,7 @@ using NewNews.DAL.Models;
 using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
 
+
 namespace NewNews.MAUI.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
@@ -28,13 +29,18 @@ namespace NewNews.MAUI.ViewModels
             _newsService = newsService;
             _keywordService = keywordService;
 
+            CountryNames = new ObservableCollection<string>(AvailableCountries.Keys);
+
+
             //LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
             _ = LoadSavedKeywords();
         }
 
+      
 
 
-        
+
+
 
 
     }
