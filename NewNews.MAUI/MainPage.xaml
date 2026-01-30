@@ -19,30 +19,31 @@
         <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
             <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding NewsVM.SearchQuery}"/>
             <Button Text="🔍" Padding="2" Command="{Binding NewsVM.SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-            <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-            <Button Text="❌" Padding="2" Command="{Binding ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="💾" Padding="2" Command="{Binding SavedSearchVM.SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="❌" Padding="2" Command="{Binding NewsVM.ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
         </HorizontalStackLayout>
 
 
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
-            <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="⭐" Command="{Binding UiStateVM.ToggleSavedCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             
             <!--Hide languages to be replaced by country and source-->
-            <Button Text="🌐" Command="{Binding LanguageVM.ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="🌐" Command="{Binding UiStateVM.ToggleLanguagesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>
 
 
 
 
-            <Button Text="🌍" Command="{Binding ToggleCountryCollectionCommand}" Style="{StaticResource ArticleButtonStyle}" />
+            <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />
             <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
-                    Command="{Binding ToggleSourceCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
 
             <Button Text="Kategori"
-                    IsVisible="{Binding IsCategoryVisible}"
-                    Command="{Binding OnCategoryChangedCommand}"
-                    Style="{StaticResource ArticleButtonStyle}"/>
+                IsVisible="{Binding CategoryVM.IsCategoryVisible}"
+                Command="{Binding UiStateVM.ToggleCategoriesCommand}"
+                Style="{StaticResource ArticleButtonStyle}"/>   
+
 
 
         </HorizontalStackLayout>
@@ -66,12 +67,13 @@
 
 
             <CollectionView 
-                        ItemsSource="{Binding SavedKeywords}"
+                        ItemsSource="{Binding SavedSearchVM.SavedKeywords}"
                         SelectionMode="Single"
-                        SelectionChanged="SavedKeywords_SelectionChanged"
+                        SelectedItem="{Binding SavedSearchVM.SelectedSavedSearch, Mode=TwoWay}"
+               
                         ItemsLayout="VerticalList"
                         VerticalOptions="Start"
-                        IsVisible="{Binding AreSavedKeywordsVisible}">
+                        IsVisible="{Binding SavedSearchVM.AreSavedKeywordsVisible}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:SavedSearch">
                         <SwipeView>
@@ -79,7 +81,7 @@
                                 <SwipeItems Mode="Execute">
                                     <SwipeItem Text="🗑️"
                                            BackgroundColor="Red"
-                                           Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                            CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
@@ -87,7 +89,7 @@
                                 <SwipeItems Mode="Execute">
                                     <SwipeItem Text="🗑️"
                                            BackgroundColor="Red"
-                                           Command="{Binding BindingContext.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                            CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.LeftItems>
@@ -102,10 +104,10 @@
             </CollectionView>
 
 
-            <CollectionView ItemsSource="{Binding CountryNames}"
+            <CollectionView ItemsSource="{Binding CountryVM.CountryNames}"
                         SelectionMode="Single"
-                        SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
-                        IsVisible="{Binding IsCountryCollectionVisible}"
+                        SelectedItem="{Binding CountryVM.SelectedCountry, Mode=TwoWay}"
+                        IsVisible="{Binding CountryVM.IsCountryCollectionVisible}"
                             VerticalOptions="Start">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="x:String">
@@ -120,15 +122,30 @@
             </CollectionView>
 
 
-            <CollectionView ItemsSource="{Binding Sources}"
-                IsVisible="{Binding IsSourceCollectionVisible}"
-                SelectedItem="{Binding SelectedSource}">
+            <CollectionView ItemsSource="{Binding SourceVM.Sources}"
+                IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
+                SelectedItem="{Binding SourceVM.SelectedSource}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:SourceDto">
                         <Label Text="{Binding Name}" Padding="10"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <CollectionView 
+                    ItemsSource="{Binding CategoryVM.Categories}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding CategoryVM.SelectedCategory, Mode=TwoWay}"
+                    IsVisible="{Binding CategoryVM.IsCategoryVisible}"> 
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2">
+                            <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
         </VerticalStackLayout>
 
         <CollectionView Grid.Row="4" ItemsSource="{Binding NewsVM.Articles}" SelectionMode="None">

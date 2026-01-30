@@ -10,23 +10,13 @@ namespace NewNews.MAUI
         {
             InitializeComponent();
             BindingContext = vm;
-            //BindingContext = vm ?? new MainViewModelTest();
         }
 
-        public class MainViewModelTest
-        {
-            public string Title => "Hej, världen!";
-        }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            if (BindingContext is MainViewModel vm)
-            {
-                //await vm.LoadMoreNews();
-                await vm.EnsureInitializedAsync();
-            }
         }
 
         private async void WebView_Navigated(object sender, WebNavigatedEventArgs e)
@@ -44,26 +34,5 @@ namespace NewNews.MAUI
                 catch { }
             }
         }
-
-
-        private void SavedKeywords_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.CurrentSelection.FirstOrDefault() is SavedSearch selected)
-            {
-                // Anropa samma funktion som när man väljer i dropdown
-                var vm = BindingContext as MainViewModel;
-                vm?.SearchByKeywordCommand.Execute(selected);
-
-                // Avmarkera direkt så man kan klicka igen
-                ((CollectionView)sender).SelectedItem = null;
-
-                // Fäll ihop listan efter val
-                if (vm != null)
-                    vm.AreSavedKeywordsVisible = false;
-            }
-        }
-
-
-
     }
 }

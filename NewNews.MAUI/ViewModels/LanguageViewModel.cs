@@ -45,13 +45,6 @@ namespace NewNews.MAUI.ViewModels
                 LanguageNames.Add(lang);
         }
 
-        [RelayCommand]
-        private void ToggleLanguageCollection()
-        {
-
-            IsLanguageCollectionVisible = !IsLanguageCollectionVisible;
-        }
-
         partial void OnSelectedLanguageChanged(string value)
         {
             // Dölj collection view när ett språk väljs

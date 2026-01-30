@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NewNews.DAL.Models;
 using NewNews.MAUI.Dto;
+using NewNews.MAUI.Services;
 using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
@@ -12,6 +14,7 @@ namespace NewNews.MAUI.ViewModels
     public partial class NewsViewModel : BaseViewModel
     {
         private readonly INewsService _newsService;
+        private readonly IBrowserService _browser;
         public ObservableCollection<ArticleViewModel> Articles { get; } = new();
 
         [ObservableProperty] private string? searchQuery;
@@ -19,14 +22,16 @@ namespace NewNews.MAUI.ViewModels
         [ObservableProperty] private string? selectedCountry;
         [ObservableProperty] private SourceDto? selectedSource;
         [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private string? languageCode;
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
         private const int pageSize = 15;
 
-        public NewsViewModel(INewsService newsService)
+        public NewsViewModel(INewsService newsService, IBrowserService browser)
         {
             _newsService = newsService;
+            _browser = browser;
         }
 
         [RelayCommand]
@@ -53,14 +58,14 @@ namespace NewNews.MAUI.ViewModels
 
             string? sourceId = SelectedSource?.Id;
 
-            // Språk kommer från MainViewModel.LanguageVM
-            string? languageCode = (App.Current.MainPage.BindingContext as MainViewModel)?.LanguageVM.CurrentLanguageCode;
+            
+
 
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,
                 pageSize,
                 query ?? "nyheter",
-                languageCode,
+                LanguageCode,
                 categoryFilter,
                 countryCode,
                 sourceId);
@@ -74,18 +79,6 @@ namespace NewNews.MAUI.ViewModels
                 currentPage++;
 
             IsBusy = false;
-        }
-
-        [RelayCommand]
-        private void ToggleNewsExpanded(ArticleViewModel article)
-        {
-            if (article == null) return;
-
-            foreach (var a in Articles)
-                if (a != article)
-                    a.IsExpanded = false;
-
-            article.IsExpanded = !article.IsExpanded;
         }
 
         [RelayCommand]
@@ -103,10 +96,8 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private async Task OpenInBrowser(string? url)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                return;
-
-            await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
+            if (!string.IsNullOrWhiteSpace(url))
+                await _browser.OpenAsync(url);
         }
 
         private double webViewHeight;
@@ -117,7 +108,12 @@ namespace NewNews.MAUI.ViewModels
         }
 
 
-        
+        [RelayCommand]
+        private void ClearSearch()
+        {
+            SearchQuery = string.Empty;
+        }
+
 
     }
 }

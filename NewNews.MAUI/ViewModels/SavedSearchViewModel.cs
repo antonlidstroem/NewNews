@@ -1,0 +1,100 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using NewNews.DAL.Models;
+using NewNews.DAL.Services;
+using NewNews.MAUI.ViewModels.Base;
+
+namespace NewNews.MAUI.ViewModels
+{
+    public partial class SavedSearchViewModel : BaseViewModel
+    {
+        private readonly SearchKeywordService _keywordService;
+        private readonly NewsViewModel _newsVM;
+        private readonly LanguageViewModel _languageVM;
+        private readonly CategoryViewModel _categoryVM;
+
+        public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
+
+        [ObservableProperty] private SavedSearch? selectedSavedSearch;
+        [ObservableProperty] private bool areSavedKeywordsVisible;
+
+        public SavedSearchViewModel(SearchKeywordService keywordService,
+                                    NewsViewModel newsVM,
+                                    LanguageViewModel languageVM,
+                                    CategoryViewModel categoryVM)
+        {
+            _keywordService = keywordService;
+            _newsVM = newsVM;
+            _languageVM = languageVM;
+            _categoryVM = categoryVM;
+        }
+
+        [RelayCommand]
+        private async Task SearchByKeyword(SavedSearch search)
+        {
+            if (search == null) return;
+
+            _newsVM.SearchQuery = search.Keyword;
+            _languageVM.SelectedLanguage = search.Language;
+            _categoryVM.SelectedCategory =
+                string.IsNullOrWhiteSpace(search.Category) ? "Allt" : search.Category;
+
+            _newsVM.SelectedCategory = _categoryVM.SelectedCategory;
+            await _newsVM.SearchNews();
+
+        }
+
+        [RelayCommand]
+        private async Task SaveSearch()
+        {
+            if (string.IsNullOrWhiteSpace(_newsVM.SearchQuery)) return;
+
+            string? categoryToSave =
+            _categoryVM.SelectedCategory != "Allt"
+                ? _categoryVM.SelectedCategory
+                : null;
+
+            await _keywordService.AddKeywordAsync(
+                _newsVM.SearchQuery,
+                _languageVM.SelectedLanguage,
+                categoryToSave);
+
+            await LoadSavedKeywords();
+
+        }
+
+        [RelayCommand]
+        private async Task DeleteSavedSearch(SavedSearch search)
+        {
+            if (search == null) return;
+            await _keywordService.DeleteKeywordAsync(search.Id);
+            await LoadSavedKeywords();
+        }
+
+        partial void OnSelectedSavedSearchChanged(SavedSearch? value)
+        {
+            if (value == null) return;
+
+            _newsVM.SearchQuery = value.Keyword;
+            _languageVM.SelectedLanguage = value.Language;
+
+            _categoryVM.SelectedCategory =
+                string.IsNullOrWhiteSpace(value.Category) ? "Allt" : value.Category;
+
+            _ = _newsVM.SearchNews();
+
+        }
+
+        public async Task LoadSavedKeywords()
+        {
+            SavedKeywords.Clear();
+            var keywords = await _keywordService.GetAllKeywordsAsync();
+            foreach (var k in keywords)
+                SavedKeywords.Add(k);
+        }
+    }
+}
