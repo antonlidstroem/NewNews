@@ -17,8 +17,8 @@
 
 
         <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
-            <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding SearchQuery}"/>
-            <Button Text="🔍" Padding="2" Command="{Binding SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding NewsVM.SearchQuery}"/>
+            <Button Text="🔍" Padding="2" Command="{Binding NewsVM.SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="💾" Padding="2" Command="{Binding SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Button Text="❌" Padding="2" Command="{Binding ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
         </HorizontalStackLayout>
@@ -131,7 +131,7 @@
             </CollectionView>
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="4" ItemsSource="{Binding Articles}" SelectionMode="None">
+        <CollectionView Grid.Row="4" ItemsSource="{Binding NewsVM.Articles}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ArticleViewModel">
                     <Border Style="{StaticResource ArticleFrameStyle}">
