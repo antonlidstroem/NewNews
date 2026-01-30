@@ -34,7 +34,7 @@ namespace NewNews.MAUI.ViewModels
         }
 
 
-        public bool IsCategoryVisible => SelectedLanguage == "English";
+        public bool IsCategoryVisible => LanguageVM.SelectedLanguage == "English";
 
         partial void OnSelectedCategoryChanged(string value)
         {

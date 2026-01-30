@@ -21,7 +21,7 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleSourceCollection()
         {
-            IsLanguageCollectionVisible = false;
+            LanguageVM.IsLanguageCollectionVisible = false;
             IsCountryCollectionVisible = false;
             AreSavedKeywordsVisible = false;
 

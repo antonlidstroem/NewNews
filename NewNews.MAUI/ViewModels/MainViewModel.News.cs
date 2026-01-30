@@ -29,25 +29,17 @@ namespace NewNews.MAUI.ViewModels
             ? null
             : AvailableCountries[SelectedCountry];
 
-            string? languageCode = SelectedLanguage == "Allt" || string.IsNullOrWhiteSpace(SelectedLanguage)
-                ? null
-                : CurrentLanguageCode;
-
             string? sourceId = SelectedSource?.Id; // null är redan OK
 
-
-
-
-
+            string? languageCode = LanguageVM.CurrentLanguageCode;
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,
                 pageSize,
                 SearchQuery ?? "nyheter",
-                CurrentLanguageCode,
+                languageCode,
                 categoryFilter,
                 countryCode,
                 sourceId);
-
 
             foreach (var item in news)
                 Articles.Add(new ArticleViewModel(item));

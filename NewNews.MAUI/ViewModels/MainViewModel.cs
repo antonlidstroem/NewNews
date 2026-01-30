@@ -24,11 +24,23 @@ namespace NewNews.MAUI.ViewModels
         private int currentPage = 1;
         private const int pageSize = 5;
 
+        public LanguageViewModel LanguageVM { get; }
+
         public MainViewModel(INewsService newsService, SearchKeywordService keywordService)
         {
             _newsService = newsService;
             _keywordService = keywordService;
-     
+
+            LanguageVM = new LanguageViewModel();
+
+            LanguageVM.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
+                {
+                    _ = SearchNews();
+                }
+            };
+
             //LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
 
             CountryNames = new ObservableCollection<string>();
@@ -59,9 +71,17 @@ namespace NewNews.MAUI.ViewModels
 
 
 
+    
 
+        [RelayCommand]
+        private void ToggleLanguageCollection()
+        {
+            IsCountryCollectionVisible = false;
+            IsSourceCollectionVisible = false;
+            AreSavedKeywordsVisible = false;
 
-
+            //IsLanguageCollectionVisible = !IsLanguageCollectionVisible;
+        }
 
 
 

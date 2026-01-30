@@ -28,8 +28,8 @@
             <Button Text="⭐" Command="{Binding ToggleSavedKeywordsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             
             <!--Hide languages to be replaced by country and source-->
-            <Button Text="🌐" Command="{Binding ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-            <Label Text="{Binding LanguageDisplayName}" VerticalOptions="Center" FontAttributes="Bold"/>
+            <Button Text="🌐" Command="{Binding LanguageVM.ToggleLanguageCollectionCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>
 
 
 
@@ -49,23 +49,19 @@
 
         <VerticalStackLayout Grid.Row="2">
             <CollectionView 
-                ItemsSource="{Binding LanguageNames}"
+                ItemsSource="{Binding LanguageVM.LanguageNames}"
                 SelectionMode="Single"
-                SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
-                IsVisible="{Binding IsLanguageCollectionVisible}"
-                VerticalOptions="Start">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="x:String">
-                        <Border Padding="10" Margin="2" 
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
-                            <Label Text="{Binding .}" 
-                       VerticalOptions="Center" 
-                       HorizontalOptions="Center" 
-                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                SelectedItem="{Binding LanguageVM.SelectedLanguage, Mode=TwoWay}"
+                IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Padding="10" Margin="2">
+                                        <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
 
 
 

@@ -39,7 +39,7 @@ namespace NewNews.MAUI.ViewModels
 
             string? categoryToSave = IsCategoryVisible && SelectedCategory != "Allt" ? SelectedCategory : null;
 
-            await _keywordService.AddKeywordAsync(SearchQuery, SelectedLanguage, categoryToSave);
+            await _keywordService.AddKeywordAsync(SearchQuery, LanguageVM.SelectedLanguage, categoryToSave);
 
             // Ladda om sparade sökningar
             await LoadSavedKeywords();
@@ -53,7 +53,7 @@ namespace NewNews.MAUI.ViewModels
             if (value == null) return;
 
             SearchQuery = value.Keyword;
-            SelectedLanguage = value.Language;
+            LanguageVM.SelectedLanguage = value.Language;
 
             if (!string.IsNullOrWhiteSpace(value.Category))
                 SelectedCategory = value.Category;
@@ -80,7 +80,7 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleSavedKeywords()
         {
-            IsLanguageCollectionVisible = false;
+            LanguageVM.IsLanguageCollectionVisible = false;
             IsCountryCollectionVisible = false;
             IsSourceCollectionVisible = false;
 

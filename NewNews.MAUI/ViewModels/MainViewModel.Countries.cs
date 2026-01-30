@@ -32,7 +32,7 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleCountryCollection()
         {
-            IsLanguageCollectionVisible = false;
+            LanguageVM.IsLanguageCollectionVisible = false;
             IsSourceCollectionVisible = false;
             AreSavedKeywordsVisible = false;
 
