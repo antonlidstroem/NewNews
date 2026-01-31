@@ -12,7 +12,9 @@ namespace NewNews.MAUI.ViewModels
     {
         [ObservableProperty]
         private bool isCategoryVisible;
-        //public bool IsCategoryVisible => _languageVM.SelectedLanguage == "English" && _isCategoryVisible;
+        [ObservableProperty]
+        private bool isCategoryButtonVisible;
+        
 
         public ObservableCollection<string> Categories { get; } = new()
         {
@@ -25,11 +27,12 @@ namespace NewNews.MAUI.ViewModels
         public CategoryViewModel()
         {
             isCategoryVisible = false;
+            isCategoryButtonVisible = false;
         }
 
-        public void UpdateVisibility(string selectedLanguage)
+        public void UpdateButtonVisibility(string selectedLanguage)
         {
-            IsCategoryVisible = selectedLanguage == "English";
+            IsCategoryButtonVisible = selectedLanguage == "English";
         }
     }
 }

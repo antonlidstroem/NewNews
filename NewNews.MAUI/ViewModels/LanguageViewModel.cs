@@ -48,7 +48,6 @@ namespace NewNews.MAUI.ViewModels
 
         partial void OnSelectedLanguageChanged(string value)
         {
-            // Dölj collection view när ett språk väljs
             IsLanguageCollectionVisible = false;
         }
 

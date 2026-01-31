@@ -23,31 +23,34 @@
             <Button Text="❌" Padding="2" Command="{Binding NewsVM.ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
         </HorizontalStackLayout>
 
-
+<!--SPARADE SÖKORD KNAPP-->
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
             <Button Text="⭐" Command="{Binding UiStateVM.ToggleSavedCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             
-            <!--Hide languages to be replaced by country and source-->
+<!--SPRÅK KNAPP-->
             <Button Text="🌐" Command="{Binding UiStateVM.ToggleLanguagesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             <Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>
 
 
 
-
+<!--LÄNDER KNAPP-->
             <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />
+            
+<!--KÄLLOR KNAPP-->
             <!--<Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
                     Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>-->
 
+<!--KATEGORIER KNAPP-->
             <Button Text="Kategori"
-                IsVisible="{Binding CategoryVM.IsCategoryVisible}"
+                IsVisible="{Binding CategoryVM.IsCategoryButtonVisible}"
                 Command="{Binding UiStateVM.ToggleCategoriesCommand}"
                 Style="{StaticResource ArticleButtonStyle}"/>   
 
 
 
         </HorizontalStackLayout>
-
+<!--SPRÅK-->
         <VerticalStackLayout Grid.Row="2">
             <CollectionView 
                 ItemsSource="{Binding LanguageVM.LanguageNames}"
@@ -65,7 +68,7 @@
 
 
 
-
+<!--SPARADE SÖKORD-->
             <CollectionView 
                         ItemsSource="{Binding SavedSearchVM.SavedKeywords}"
                         SelectionMode="Single"
@@ -103,7 +106,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-
+<!--LÄNDER-->
             <CollectionView ItemsSource="{Binding CountryVM.Countries}"
                         SelectionMode="Single"
                         SelectedItem="{Binding CountryVM.SelectedCountry, Mode=TwoWay}"
@@ -121,7 +124,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-
+<!--KÄLLOR-->
             <!--<CollectionView ItemsSource="{Binding SourceVM.Sources}"
                 IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
                 SelectedItem="{Binding SourceVM.SelectedSource}">

@@ -55,6 +55,7 @@ namespace NewNews.MAUI.ViewModels
             {
                 if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
                 {
+                    CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
                     _ = OnLanguageChangedAsync();
                 }
             };
@@ -90,7 +91,7 @@ namespace NewNews.MAUI.ViewModels
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    CategoryVM.UpdateVisibility(LanguageVM.SelectedLanguage);
+                    CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
                     NewsVM.LanguageCode = LanguageVM.CurrentLanguageCode;
                     await NewsVM.SearchNews();
                 });
