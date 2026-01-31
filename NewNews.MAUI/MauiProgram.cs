@@ -43,7 +43,8 @@ namespace NewNews.MAUI
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
             });
 
-            // Registrera NewsService
+            // Registrera Services
+            builder.Services.AddSingleton<IBrowserService, BrowserService>();
             builder.Services.AddSingleton<INewsService, NewsService>();
 
             // Registrera MainViewModel som singleton

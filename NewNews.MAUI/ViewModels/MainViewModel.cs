@@ -19,7 +19,7 @@ namespace NewNews.MAUI.ViewModels
         public CategoryViewModel CategoryVM { get; }
         public SavedSearchViewModel SavedSearchVM { get; }
         public CountryViewModel CountryVM { get; }
-        public SourceViewModel SourceVM { get; }
+        //public SourceViewModel SourceVM { get; }
 
         public UiStateViewModel UiStateVM { get; }
 
@@ -33,32 +33,8 @@ namespace NewNews.MAUI.ViewModels
             NewsVM = new NewsViewModel(newsService, browserService);
             CategoryVM = new CategoryViewModel();
             CountryVM = new CountryViewModel();
-            SourceVM = new SourceViewModel();
+            //SourceVM = new SourceViewModel();
 
-             
-
-            
-
-        // När språk ändras, uppdatera nyheter
-        LanguageVM.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
-                {
-                    CategoryVM.UpdateVisibility(LanguageVM.SelectedLanguage);
-                    NewsVM.LanguageCode = LanguageVM.CurrentLanguageCode;
-                    await NewsVM.SearchNews();
-                }
-            };
-
-
-            CategoryVM.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(CategoryVM.SelectedCategory))
-                {
-                    NewsVM.SelectedCategory = CategoryVM.SelectedCategory;
-                    await NewsVM.SearchNews();
-                }
-            };
 
             SavedSearchVM = new SavedSearchViewModel(
                 _keywordService,
@@ -70,36 +46,83 @@ namespace NewNews.MAUI.ViewModels
                 LanguageVM,
                 CountryVM,
                 CategoryVM,
-                SourceVM,
+                //SourceVM,
                 SavedSearchVM);
 
-            // Country → News
-            CountryVM.PropertyChanged += async (s, e) =>
+
+            // PRENUMERATIONERING PÅ ÄNDRINGAR I ANDRA VIEWMODELS
+            LanguageVM.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
+                {
+                    _ = OnLanguageChangedAsync();
+                }
+            };
+
+            CategoryVM.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(CategoryVM.SelectedCategory))
+                {
+                    _ = OnCategoryChangedAsync();
+                }
+            };
+
+            CountryVM.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(CountryVM.SelectedCountry))
                 {
-                    NewsVM.SelectedCountry = CountryVM.CurrentCountryCode;
-                    await NewsVM.SearchNews();
+                    _ = OnCountryChangedAsync();
                 }
             };
 
-            // Source → News
-            SourceVM.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(SourceVM.SelectedSource))
-                {
-                    NewsVM.SelectedSource = SourceVM.SelectedSource;
-                    await NewsVM.SearchNews();
-                }
-            };
-        }  
-
-        [RelayCommand]
-        private void ClearSearch()
-        {
-            NewsVM.SearchQuery = string.Empty;
+            //SourceVM.PropertyChanged += async (s, e) =>
+            //{
+            //    if (e.PropertyName == nameof(SourceVM.SelectedSource))
+            //    {
+            //       _ = OnSourceChangedAsync();
+            //    }
+            //};
         }
 
+        private async Task OnLanguageChangedAsync()
+        {
+            try
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    CategoryVM.UpdateVisibility(LanguageVM.SelectedLanguage);
+                    NewsVM.LanguageCode = LanguageVM.CurrentLanguageCode;
+                    await NewsVM.SearchNews();
+                });
+            }
+            catch {}
+        }
 
+        private async Task OnCategoryChangedAsync()
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                NewsVM.SelectedCategory = CategoryVM.SelectedCategory;
+                await NewsVM.SearchNews();
+            });
+        }
+
+        private async Task OnCountryChangedAsync()
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                NewsVM.SelectedCountry = CountryVM.SelectedCountry;
+                await NewsVM.SearchNews();
+            });
+        }
+
+        //private async Task OnSourceChangedAsync()
+        //{
+        //    await MainThread.InvokeOnMainThreadAsync(async () =>
+        //    {
+        //        NewsVM.SelectedSource = SourceVM.SelectedSource;
+        //        await NewsVM.SearchNews();
+        //    });
+        //}
     }
 }

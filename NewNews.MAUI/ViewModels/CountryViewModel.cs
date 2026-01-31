@@ -39,14 +39,5 @@ namespace NewNews.MAUI.ViewModels
             foreach (var c in AvailableCountries.Keys)
                 CountryNames.Add(c);
         }
-
-
-        [RelayCommand]
-        private void SelectCountry(string country)
-        {
-            SelectedCountry = country;
-            IsCountryCollectionVisible = false;
-        }
-
     }
 }
