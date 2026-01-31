@@ -161,10 +161,10 @@
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
-                            <!--<Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                            <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
                                     TextColor="#888" Padding="0" HorizontalOptions="Start"
                                     Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
-                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />-->
+                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 

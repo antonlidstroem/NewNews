@@ -40,10 +40,10 @@ namespace NewNews.MAUI.ViewModels
             _browser = browser;
             _query = query;
 
-            _query.PropertyChanged += async (_, __) =>
-            {
-                await SearchNews();
-            };
+            //_query.PropertyChanged += async (_, __) =>
+            //{
+            //    await SearchNews();
+            //};
         }
 
         [RelayCommand]
@@ -53,12 +53,15 @@ namespace NewNews.MAUI.ViewModels
             currentPage = 1;
             hasMoreItems = true;
 
-            await LoadMoreNews(SearchQuery ?? "nyheter");
+            //await LoadMoreNews(SearchQuery ?? "nyheter");
+            await LoadMoreNews();
+
         }
 
 
         [RelayCommand]
-        public async Task LoadMoreNews(string? query = "nyheter")
+        public async Task LoadMoreNews()
+            //public async Task LoadMoreNews(string? query = "nyheter")
         {
             if (IsBusy || !hasMoreItems) return;
             IsBusy = true;
@@ -121,6 +124,10 @@ namespace NewNews.MAUI.ViewModels
             SearchQuery = string.Empty;
         }
 
+        partial void OnSearchQueryChanged(string? value)
+        {
+            _query.SearchQuery = value;
+        }
 
     }
 }
