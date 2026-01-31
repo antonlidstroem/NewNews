@@ -7,10 +7,12 @@ using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
 using NewNews.MAUI.ViewModels.Base;
 
+
 namespace NewNews.MAUI.ViewModels
 {
     public partial class LanguageViewModel : BaseViewModel
     {
+        private readonly NewsQueryViewModel _query;
         public Dictionary<string, string> AvailableLanguages { get; } = new()
     {
         {"English", "en"},
@@ -31,26 +33,26 @@ namespace NewNews.MAUI.ViewModels
         private string selectedLanguage = "Svenska";
 
         [ObservableProperty]
-        private bool isLanguageCollectionVisible = false;
+        private bool isLanguageCollectionVisible;
 
-        public string CurrentLanguageCode =>
-               SelectedLanguage != null && SelectedLanguage != "Allt" && AvailableLanguages.TryGetValue(SelectedLanguage, out var code)
-               ? code : null;
+        public string? CurrentLanguageCode =>
+        AvailableLanguages.TryGetValue(SelectedLanguage, out var code)
+            ? code
+            : null;
 
-        public string LanguageDisplayName => SelectedLanguage;
-
-        public LanguageViewModel()
+        public LanguageViewModel(NewsQueryViewModel query)
         {
             LanguageNames.Add("Allt");
             foreach (var lang in AvailableLanguages.Keys)
                 LanguageNames.Add(lang);
+            _query = query;
         }
 
         partial void OnSelectedLanguageChanged(string value)
         {
             IsLanguageCollectionVisible = false;
-        }
+            _query.LanguageCode = CurrentLanguageCode;
 
-        
+        }
     }
 }

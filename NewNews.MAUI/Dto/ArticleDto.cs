@@ -9,5 +9,7 @@
         public DateTime PublishedAt { get; set; }
         public string? Content { get; set; }
         public SourceDto Source { get; set; } = new();
+
+        public string? Category { get; set; }
     }
 }

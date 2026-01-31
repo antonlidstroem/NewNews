@@ -6,9 +6,20 @@ namespace NewNews.MAUI.Dto
 {
     public class CountryDto
     {
-        public string Name { get; set; } = string.Empty;  // t.ex. "Sverige"
-        public string Code { get; set; } = string.Empty;  // t.ex. "se"
+        public string Name { get; set; } = string.Empty; 
+        public string Code { get; set; } = string.Empty;  
 
-        public override string ToString() => Name; // gör att combobox/collectionview visar Name
+        public override string ToString() => Name; 
+
+        public override bool Equals(object? obj)
+        {
+            return obj is CountryDto dto &&
+                   Code == dto.Code;
+        }
+
+        public override int GetHashCode()
+        {
+            return Code.GetHashCode();
+        }
     }
 }

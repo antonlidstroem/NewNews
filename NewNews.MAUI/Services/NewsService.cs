@@ -24,22 +24,40 @@ public class NewsService : INewsService
 
         if (!string.IsNullOrEmpty(country))
         {
-            // Hämta artiklar från landet (top-headlines)
-            var topResponse = await _client.GetTopHeadlinesByCountryAsync(country, query, page, pageSize);
+            // HÄMTAR FRÅN TOPHEADLINES
+            var topResponse = await _client.GetTopHeadlinesByCountryAsync(
+                country, 
+                query, 
+                page, 
+                pageSize);
 
             if (topResponse?.Articles != null)
                 articles = topResponse.Articles;
         }
         else
         {
-            // Everything är primärt
-            var everythingResponse = await _client.GetEverythingAsync(query, language, page, pageSize);
+            // HÄMTAR FRÅN EVERYTHING (PRIMÄR)
+            var everythingResponse = await _client.GetEverythingAsync(
+                query,
+                language,
+                page,
+                pageSize,
+                sourceId: null,
+                category: null);
 
             if (everythingResponse?.Articles != null)
                 articles = everythingResponse.Articles;
         }
 
         // Manuella filter
+
+        if (!string.IsNullOrEmpty(category))
+        {
+            articles = articles
+                .Where(a => a.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+        }
+
         if (!string.IsNullOrEmpty(sourceId))
             articles = articles.Where(a => string.Equals(a.Source?.Id, sourceId, StringComparison.OrdinalIgnoreCase)).ToList();
 

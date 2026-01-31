@@ -8,6 +8,7 @@ using NewNews.DAL.Models;
 using NewNews.MAUI.Dto;
 using NewNews.MAUI.ViewModels.Base;
 
+
 namespace NewNews.MAUI.ViewModels
 {
     public partial class CountryViewModel : BaseViewModel
@@ -15,14 +16,19 @@ namespace NewNews.MAUI.ViewModels
         
         public ObservableCollection<CountryDto> Countries { get; } = new();
 
-        [ObservableProperty] private CountryDto? selectedCountry;
+        [ObservableProperty] 
+        private CountryDto? selectedCountry;
 
-        [ObservableProperty] private bool isCountryCollectionVisible;
+        [ObservableProperty] 
+        private bool isCountryCollectionVisible;
+        public string? CurrentCountryCode => SelectedCountry?.Code;
 
-        
+        private readonly NewsQueryViewModel _query;
 
-        public CountryViewModel()
+
+        public CountryViewModel(NewsQueryViewModel query)
         {
+            _query = query;
             Countries.Add(new CountryDto { Name = "Allt", Code = string.Empty });
             Countries.Add(new CountryDto { Name = "Sverige", Code = "se" });
             Countries.Add(new CountryDto { Name = "USA", Code = "us" });
@@ -31,7 +37,10 @@ namespace NewNews.MAUI.ViewModels
             Countries.Add(new CountryDto { Name = "Frankrike", Code = "fr" });
             Countries.Add(new CountryDto { Name = "Norge", Code = "no" });
         }
-
-        public string? CurrentCountryCode => SelectedCountry?.Code;
+        partial void OnSelectedCountryChanged(CountryDto? value)
+        {
+            IsCountryCollectionVisible = false;
+            _query.CountryCode = value?.Code;
+        }
     }
 }

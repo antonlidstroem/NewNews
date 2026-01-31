@@ -8,6 +8,7 @@ using NewNews.DAL.Models;
 using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
 
+
 namespace NewNews.MAUI.ViewModels
 {
     public partial class SavedSearchViewModel : BaseViewModel
@@ -16,6 +17,7 @@ namespace NewNews.MAUI.ViewModels
         private readonly NewsViewModel _newsVM;
         private readonly LanguageViewModel _languageVM;
         private readonly CategoryViewModel _categoryVM;
+        private readonly NewsQueryViewModel _query;
 
         public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
 
@@ -25,23 +27,32 @@ namespace NewNews.MAUI.ViewModels
         public SavedSearchViewModel(SearchKeywordService keywordService,
                                     NewsViewModel newsVM,
                                     LanguageViewModel languageVM,
-                                    CategoryViewModel categoryVM)
+                                    CategoryViewModel categoryVM,
+                                    NewsQueryViewModel query)
         {
             _keywordService = keywordService;
             _newsVM = newsVM;
             _languageVM = languageVM;
             _categoryVM = categoryVM;
+            _query = query;
         }
+
+        private string? MapLanguage(string lang) =>
+            lang switch
+            {
+                "svenska" => "sv",
+                "english" => "en",
+                _ => null
+            };
 
         [RelayCommand]
         private async Task SearchByKeyword(SavedSearch search)
         {
             if (search == null) return;
 
-            _newsVM.SearchQuery = search.Keyword;
-            _languageVM.SelectedLanguage = search.Language;
-            _categoryVM.SelectedCategory =
-                string.IsNullOrWhiteSpace(search.Category) ? "Allt" : search.Category;
+            _query.SearchQuery = search.Keyword;
+            _query.LanguageCode = MapLanguage(search.Language);
+            _query.Category = search.Category;
 
             _newsVM.SelectedCategory = _categoryVM.SelectedCategory;
             await _newsVM.SearchNews();

@@ -11,20 +11,20 @@ namespace NewNews.MAUI.ViewModels
         private readonly LanguageViewModel _language;
         private readonly CountryViewModel _country;
         private readonly CategoryViewModel _category;
-        //private readonly SourceViewModel _source;
+        private readonly SourceViewModel _source;
         private readonly SavedSearchViewModel _saved;
 
         public UiStateViewModel(
         LanguageViewModel language,
         CountryViewModel country,
         CategoryViewModel category,
-        //SourceViewModel source,
+        SourceViewModel source,
         SavedSearchViewModel saved)
         {
             _language = language;
             _country = country;
             _category = category;
-            //_source = source;
+            _source = source;
             _saved = saved;
         }
 
@@ -33,7 +33,7 @@ namespace NewNews.MAUI.ViewModels
             _language.IsLanguageCollectionVisible = false;
             _country.IsCountryCollectionVisible = false;
             _category.IsCategoryVisible = false;
-            //_source.IsSourceCollectionVisible = false;
+            _source.IsSourceCollectionVisible = false;
             _saved.AreSavedKeywordsVisible = false;
         }
 
@@ -61,12 +61,12 @@ namespace NewNews.MAUI.ViewModels
             _category.IsCategoryVisible = newState;
         }
 
-        //[RelayCommand]
-        //private void ToggleSources()
-        //{
-        //    CloseAll();
-        //    _source.IsSourceCollectionVisible = true;
-        //}
+        [RelayCommand]
+        private void ToggleSources()
+        {
+            CloseAll();
+            _source.IsSourceCollectionVisible = true;
+        }
 
         [RelayCommand]
         private void ToggleSaved()

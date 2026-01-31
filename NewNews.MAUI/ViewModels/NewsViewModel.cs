@@ -15,24 +15,35 @@ namespace NewNews.MAUI.ViewModels
     {
         private readonly INewsService _newsService;
         private readonly IBrowserService _browser;
+        private readonly NewsQueryViewModel _query;
+
         public ObservableCollection<ArticleViewModel> Articles { get; } = new();
 
         [ObservableProperty] private string? searchQuery;
         [ObservableProperty] private string selectedCategory = "Allt";
         [ObservableProperty] private SourceDto? selectedSource;
         [ObservableProperty] private bool isBusy;
-        [ObservableProperty] private string? languageCode;
-        [ObservableProperty] private CountryDto? selectedCountry;
+        //[ObservableProperty] private string? languageCode;
+        //[ObservableProperty] private CountryDto? selectedCountry;
 
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
         private const int pageSize = 15;
 
-        public NewsViewModel(INewsService newsService, IBrowserService browser)
+        public NewsViewModel(
+            INewsService newsService, 
+            IBrowserService browser,
+            NewsQueryViewModel query)
         {
             _newsService = newsService;
             _browser = browser;
+            _query = query;
+
+            _query.PropertyChanged += async (_, __) =>
+            {
+                await SearchNews();
+            };
         }
 
         [RelayCommand]
@@ -52,17 +63,18 @@ namespace NewNews.MAUI.ViewModels
             if (IsBusy || !hasMoreItems) return;
             IsBusy = true;
 
-            string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
-            string? sourceId = SelectedSource?.Id;
+            //string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
+            //string? sourceId = SelectedSource?.Id;
 
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,
                 pageSize,
-                query ?? "nyheter",
-                LanguageCode,
-                categoryFilter,
-                SelectedCountry?.Code,   
-                sourceId);
+                _query.SearchQuery ?? "nyheter",
+                _query.LanguageCode,
+                _query.Category,
+                _query.CountryCode,
+                _query.SourceId);
+
 
             foreach (var item in news)
                 Articles.Add(new ArticleViewModel(item));
