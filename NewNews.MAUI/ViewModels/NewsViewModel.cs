@@ -19,10 +19,11 @@ namespace NewNews.MAUI.ViewModels
 
         [ObservableProperty] private string? searchQuery;
         [ObservableProperty] private string selectedCategory = "Allt";
-        [ObservableProperty] private string? selectedCountry;
         [ObservableProperty] private SourceDto? selectedSource;
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private string? languageCode;
+        [ObservableProperty] private CountryDto? selectedCountry;
+
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
@@ -52,14 +53,7 @@ namespace NewNews.MAUI.ViewModels
             IsBusy = true;
 
             string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
-            string? countryCode = SelectedCountry == "Allt" || string.IsNullOrWhiteSpace(SelectedCountry)
-                ? null
-                : SelectedCountry?.ToLower(); // eller map från AvailableCountries om du vill
-
             string? sourceId = SelectedSource?.Id;
-
-            
-
 
             var news = await _newsService.GetNewsPageAsync(
                 currentPage,
@@ -67,7 +61,7 @@ namespace NewNews.MAUI.ViewModels
                 query ?? "nyheter",
                 LanguageCode,
                 categoryFilter,
-                countryCode,
+                SelectedCountry?.Code,   
                 sourceId);
 
             foreach (var item in news)
@@ -80,6 +74,7 @@ namespace NewNews.MAUI.ViewModels
 
             IsBusy = false;
         }
+
 
         [RelayCommand]
         private async Task SourceTapped(string? url)

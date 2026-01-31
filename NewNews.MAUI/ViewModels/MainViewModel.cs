@@ -112,7 +112,8 @@ namespace NewNews.MAUI.ViewModels
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
                 NewsVM.SelectedCountry = CountryVM.SelectedCountry;
-                await NewsVM.SearchNews();
+
+                    await NewsVM.SearchNews();
             });
         }
 

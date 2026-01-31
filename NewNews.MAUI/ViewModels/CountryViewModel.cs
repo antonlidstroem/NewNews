@@ -12,32 +12,26 @@ namespace NewNews.MAUI.ViewModels
 {
     public partial class CountryViewModel : BaseViewModel
     {
-        public Dictionary<string, string> AvailableCountries { get; } = new()
-        {
-            {"Sverige", "se"},
-            {"USA", "us"},
-            {"Storbritannien", "gb"},
-            {"Tyskland", "de"},
-            {"Frankrike", "fr"},
-            {"Norge", "no"},
-        };
-        public ObservableCollection<string> CountryNames { get; } = new();
+        
+        public ObservableCollection<CountryDto> Countries { get; } = new();
 
+        [ObservableProperty] private CountryDto? selectedCountry;
 
-        [ObservableProperty] private string? selectedCountry = "Allt";
         [ObservableProperty] private bool isCountryCollectionVisible;
 
-        public string? CurrentCountryCode =>
-            SelectedCountry != "Allt" &&
-            AvailableCountries.TryGetValue(SelectedCountry, out var code)
-                ? code
-                : null;
+        
 
         public CountryViewModel()
         {
-            CountryNames.Add("Allt");
-            foreach (var c in AvailableCountries.Keys)
-                CountryNames.Add(c);
+            Countries.Add(new CountryDto { Name = "Allt", Code = string.Empty });
+            Countries.Add(new CountryDto { Name = "Sverige", Code = "se" });
+            Countries.Add(new CountryDto { Name = "USA", Code = "us" });
+            Countries.Add(new CountryDto { Name = "Storbritannien", Code = "gb" });
+            Countries.Add(new CountryDto { Name = "Tyskland", Code = "de" });
+            Countries.Add(new CountryDto { Name = "Frankrike", Code = "fr" });
+            Countries.Add(new CountryDto { Name = "Norge", Code = "no" });
         }
+
+        public string? CurrentCountryCode => SelectedCountry?.Code;
     }
 }

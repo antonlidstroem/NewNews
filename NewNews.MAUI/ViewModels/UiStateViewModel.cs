@@ -40,22 +40,25 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleLanguages()
         {
+            bool newState = !_language.IsLanguageCollectionVisible;
             CloseAll();
-            _language.IsLanguageCollectionVisible = true;
+            _language.IsLanguageCollectionVisible = newState;
         }
 
         [RelayCommand]
         private void ToggleCountries()
         {
+            bool newState = !_country.IsCountryCollectionVisible;
             CloseAll();
-            _country.IsCountryCollectionVisible = true;
+            _country.IsCountryCollectionVisible = newState;
         }
 
         [RelayCommand]
         private void ToggleCategories()
         {
+            bool newState = !_category.IsCategoryVisible;
             CloseAll();
-            _category.IsCategoryVisible = true;
+            _category.IsCategoryVisible = newState;
         }
 
         //[RelayCommand]
@@ -68,8 +71,9 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleSaved()
         {
+            bool newState = !_saved.AreSavedKeywordsVisible;
             CloseAll();
-            _saved.AreSavedKeywordsVisible = true;
+            _saved.AreSavedKeywordsVisible = newState;
         }
     }
 

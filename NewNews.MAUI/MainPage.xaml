@@ -104,7 +104,7 @@
             </CollectionView>
 
 
-            <CollectionView ItemsSource="{Binding CountryVM.CountryNames}"
+            <CollectionView ItemsSource="{Binding CountryVM.Countries}"
                         SelectionMode="Single"
                         SelectedItem="{Binding CountryVM.SelectedCountry, Mode=TwoWay}"
                         IsVisible="{Binding CountryVM.IsCountryCollectionVisible}"
