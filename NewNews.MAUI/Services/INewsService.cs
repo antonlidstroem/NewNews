@@ -7,7 +7,7 @@ public interface INewsService
         int page,
         int pageSize,
         string query,
-        string language,
+        string? language,
         string? category,
         string? country,
         string? sourceId);

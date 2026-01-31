@@ -29,7 +29,7 @@ namespace NewNews.DAL.Services
                       .ToListAsync();
         }
 
-        public Task AddKeywordAsync(string keyword, string language, string? category = null)
+        public Task AddKeywordAsync(string keyword, string? language, string? category = null)
         {
             if (string.IsNullOrWhiteSpace(keyword))
                 return Task.CompletedTask;

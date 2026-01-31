@@ -163,7 +163,7 @@
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
                                     TextColor="#888" Padding="0" HorizontalOptions="Start"
-                                    Command="{Binding SourceTappedCommand}" CommandParameter="{Binding Url}"
+                                    Command="{Binding BindingContext.SourceTappedCommand, Source={x:Reference Rootpage}}" CommandParameter="{Binding Url}"
                                     IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
@@ -180,17 +180,15 @@
                                             Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
                                             CommandParameter="{Binding Url}" />
                                 </HorizontalStackLayout>
-
-                                <WebView Source="{Binding Url}" 
-                                         HeightRequest="{Binding WebViewHeight}" 
-                                         Navigated="WebView_Navigated"/>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
 
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
-                                                  CommandParameter="{Binding .}" />
+                            <TapGestureRecognizer Command="{Binding BindingContext.OpenArticleCommand, Source={x:Reference RootPage}}"
+                          CommandParameter="{Binding Url}" />
                         </Border.GestureRecognizers>
+
+
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

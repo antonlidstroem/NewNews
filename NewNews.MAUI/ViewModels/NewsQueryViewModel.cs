@@ -9,7 +9,7 @@ namespace NewNews.MAUI.ViewModels
     {
         [ObservableProperty] private string? searchQuery;
         [ObservableProperty] private string? category;
-        [ObservableProperty] private string? languageCode;
+        [ObservableProperty] private string? languageCode = "en";
         [ObservableProperty] private string? countryCode;
         [ObservableProperty] private string? sourceId;
     }
