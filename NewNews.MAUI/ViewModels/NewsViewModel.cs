@@ -79,8 +79,11 @@ namespace NewNews.MAUI.ViewModels
                 _query.SourceId);
 
 
-            foreach (var item in news)
-                Articles.Add(new ArticleViewModel(item));
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var item in news)
+                    Articles.Add(new ArticleViewModel(item));
+            });
 
             if (news.Count == 0)
                 hasMoreItems = false;

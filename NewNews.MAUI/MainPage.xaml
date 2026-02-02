@@ -7,13 +7,19 @@
              x:Class="NewNews.MAUI.MainPage"
              x:Name="RootPage">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto, Auto,*">
 
 
         <Label Text="{Binding Title}" 
        HorizontalOptions="Center"
        VerticalOptions="Center"/>
 
+        <Label
+    Grid.Row="4"
+    Text="{Binding NewsVM.Articles.Count}"
+    FontSize="24"
+    TextColor="Red"
+/>
 
 
         <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
@@ -151,7 +157,7 @@
 
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="4" ItemsSource="{Binding NewsVM.Articles}" SelectionMode="None">
+        <CollectionView Grid.Row="5" ItemsSource="{Binding NewsVM.Articles}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ArticleViewModel">
                     <Border Style="{StaticResource ArticleFrameStyle}">
@@ -163,7 +169,7 @@
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
                                     TextColor="#888" Padding="0" HorizontalOptions="Start"
-                                    Command="{Binding BindingContext.SourceTappedCommand, Source={x:Reference Rootpage}}" CommandParameter="{Binding Url}"
+                                    Command="{Binding BindingContext.SourceTappedCommand, Source={x:Reference RootPage}}" CommandParameter="{Binding Url}"
                                     IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />

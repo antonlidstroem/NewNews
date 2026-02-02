@@ -11,11 +11,6 @@
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
     
-    <ShellContent 
-    Title="Artikel" 
-    ContentTemplate="{DataTemplate local:ArticleWebViewPage}" 
-    Route="ArticleWebViewPage" />
-
 
     <Shell.TitleView>
         <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Padding="0,0,0,0">
