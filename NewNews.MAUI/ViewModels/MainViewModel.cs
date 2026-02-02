@@ -33,6 +33,7 @@ namespace NewNews.MAUI.ViewModels
 
             UiStateVM = new UiStateViewModel(LanguageVM, CountryVM, CategoryVM, SourceVM, SavedSearchVM);
 
+
             _ = SavedSearchVM.LoadSavedKeywords();
 
             LanguageVM.PropertyChanged += async (s, e) =>

@@ -94,14 +94,14 @@ namespace NewNews.MAUI.ViewModels
         }
 
 
-        [RelayCommand]
-        private async Task SourceTapped(string? url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                return;
+        //[RelayCommand]
+        //private async Task SourceTapped(string? url)
+        //{
+        //    if (string.IsNullOrWhiteSpace(url))
+        //        return;
 
-            await Shell.Current.GoToAsync($"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}");
-        }
+        //    await Shell.Current.GoToAsync($"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}");
+        //}
 
 
         [RelayCommand]
@@ -131,14 +131,16 @@ namespace NewNews.MAUI.ViewModels
         }
 
         [RelayCommand]
-        private async Task OpenArticleAsync(string? url)
+        private async Task OpenArticle(string? url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 return;
 
-            // Navigera via Shell
-            await Shell.Current.GoToAsync($"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}");
+            await Shell.Current.GoToAsync(
+                $"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}"
+            );
         }
+
 
 
 

@@ -8,6 +8,10 @@ namespace NewNews.MAUI.ViewModels
 {
     public partial class UiStateViewModel : BaseViewModel
     {
+
+        private UiStateViewModel _uiState = null!;
+        public void SetUiState(UiStateViewModel uiState) => _uiState = uiState;
+
         private readonly LanguageViewModel _language;
         private readonly CountryViewModel _country;
         private readonly CategoryViewModel _category;
@@ -28,7 +32,7 @@ namespace NewNews.MAUI.ViewModels
             _saved = saved;
         }
 
-        private void CloseAll()
+        public void CloseAll()
         {
             _language.IsLanguageCollectionVisible = false;
             _country.IsCountryCollectionVisible = false;
