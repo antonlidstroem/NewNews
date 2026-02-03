@@ -12,13 +12,13 @@ public class NewsService : INewsService
     }
 
     public async Task<List<News>> GetNewsPageAsync(
-    int page,
-    int pageSize,
-    string query,
-    string? language,
-    string? category,
-    string? country,
-    string? sourceId)
+        int page,
+        int pageSize,
+        string query,
+        string? language,
+        string? category,
+        string? country,
+        string? sourceId)
     {
         List<ArticleDto> articles = new();
 
@@ -26,11 +26,10 @@ public class NewsService : INewsService
         {
             // HÄMTAR FRÅN TOPHEADLINES
             var topResponse = await _client.GetTopHeadlinesByCountryAsync(
-                country, 
-                query, 
-                page, 
+                country,
+                query,
+                page,
                 pageSize);
-
             if (topResponse?.Articles != null)
                 articles = topResponse.Articles;
         }
@@ -42,15 +41,13 @@ public class NewsService : INewsService
                 language,
                 page,
                 pageSize,
-                sourceId: null,
+                sourceId: sourceId,  // FIX: Skicka sourceId till API:et
                 category: null);
-
             if (everythingResponse?.Articles != null)
                 articles = everythingResponse.Articles;
         }
 
-        // Manuella filter
-
+        // Manuella filter (endast för kategori när det inte stöds av API:et)
         if (!string.IsNullOrEmpty(category))
         {
             articles = articles
@@ -58,8 +55,10 @@ public class NewsService : INewsService
                 .ToList();
         }
 
-        if (!string.IsNullOrEmpty(sourceId))
-            articles = articles.Where(a => string.Equals(a.Source?.Id, sourceId, StringComparison.OrdinalIgnoreCase)).ToList();
+        // Filtrera inte på sourceId här - det görs redan av API:et
+        // Ta bort denna kod:
+        // if (!string.IsNullOrEmpty(sourceId))
+        //     articles = articles.Where(a => string.Equals(a.Source?.Id, sourceId, StringComparison.OrdinalIgnoreCase)).ToList();
 
         var result = articles.Select(a => new News
         {
@@ -74,9 +73,6 @@ public class NewsService : INewsService
 
         return result;
     }
-
-
-    
 
     public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
     {

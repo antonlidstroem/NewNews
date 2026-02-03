@@ -39,19 +39,19 @@
 
 
 
-<!--LÄNDER KNAPP-->
-            <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />
+<!--LÄNDER KNAPP--><!--
+            <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />-->
             
-<!--KÄLLOR KNAPP-->
+<!--KÄLLOR KNAPP--><!--
             <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
-                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>-->
 
-<!--KATEGORIER KNAPP-->
+<!--KATEGORIER KNAPP--><!--
             <Button Text="Kategori"
                 IsVisible="{Binding CategoryVM.IsCategoryButtonVisible}"
                 Command="{Binding UiStateVM.ToggleCategoriesCommand}"
-                Style="{StaticResource ArticleButtonStyle}"/>   
+                Style="{StaticResource ArticleButtonStyle}"/>-->   
 
 
 
@@ -112,7 +112,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-<!--LÄNDER-->
+<!--LÄNDER--><!--
             <CollectionView ItemsSource="{Binding CountryVM.Countries}"
                         SelectionMode="Single"
                         SelectedItem="{Binding CountryVM.SelectedCountry, Mode=TwoWay}"
@@ -130,7 +130,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-<!--KÄLLOR-->
+--><!--KÄLLOR--><!--
             <CollectionView ItemsSource="{Binding SourceVM.Sources}"
                 IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
                 SelectedItem="{Binding SourceVM.SelectedSource}">
@@ -153,7 +153,7 @@
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-            </CollectionView>
+            </CollectionView>-->
 
         </VerticalStackLayout>
 
