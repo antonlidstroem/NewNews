@@ -2,104 +2,194 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:NewNews.MAUI.ViewModels"
              xmlns:models="clr-namespace:NewNews.DAL.Models;assembly=NewNews.DAL"
+             xmlns:dto="clr-namespace:NewNews.MAUI.Dto"
              x:DataType="vm:MainViewModel"
              x:Class="NewNews.MAUI.MainPage"
-             Title="{Binding Title}">
+             x:Name="RootPage">
 
-    <Grid Padding="10" RowDefinitions="Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto, Auto,*"
+          BackgroundColor="{StaticResource Tertiary}">
 
-        <!-- Sökfält -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="5">
-            <Entry Placeholder="Sök nyheter"
-                   Text="{Binding SearchQuery}"
-                   HorizontalOptions="FillAndExpand"/>
-            <Button Text="Sök"
-                    Command="{Binding SearchNewsCommand}"/>
+
+        <Label Text="{Binding Title}" 
+       HorizontalOptions="Center"
+       VerticalOptions="Center"/>
+
+        <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
+            <Entry Placeholder="Search..." WidthRequest="200"  Text="{Binding NewsVM.SearchQuery}" BackgroundColor="White" TextColor="{StaticResource Gray950}"/>
+            <Button Text="❌" Padding="2" Command="{Binding NewsVM.ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
         </HorizontalStackLayout>
 
-        <!-- Nyhetslista -->
-        <CollectionView Grid.Row="1"
-                        ItemsSource="{Binding Articles}"
-                        HorizontalOptions="FillAndExpand"
-                        VerticalOptions="FillAndExpand"
-                        SelectionMode="None">
+<!--SPARADE SÖKORD KNAPP-->
+        <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
+            <Button Text="🔍" Padding="2" Command="{Binding NewsVM.SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="💾" Padding="2" Command="{Binding SavedSearchVM.SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
+            <Button Text="⭐" Command="{Binding UiStateVM.ToggleSavedCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
+<!--SPRÅK KNAPP-->
+            <Button Text="🌐" Command="{Binding UiStateVM.ToggleLanguagesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <!--<Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>-->
+
+            <Button Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold" Style="{StaticResource ArticleLinkButtonStyle}"/>
+
+
+
+            <!--LÄNDER KNAPP--><!--
+            <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />-->
+            
+<!--KÄLLOR KNAPP--><!--
+            <Button Text="📰"
+                    IsVisible="{Binding IsSourceButtonVisible}"
+                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>-->
+
+<!--KATEGORIER KNAPP--><!--
+            <Button Text="Kategori"
+                IsVisible="{Binding CategoryVM.IsCategoryButtonVisible}"
+                Command="{Binding UiStateVM.ToggleCategoriesCommand}"
+                Style="{StaticResource ArticleButtonStyle}"/>-->   
+
+
+
+        </HorizontalStackLayout>
+<!--SPRÅK-->
+        <VerticalStackLayout Grid.Row="2">
+            <CollectionView 
+                ItemsSource="{Binding LanguageVM.LanguageNames}"
+                SelectionMode="Single"
+                SelectedItem="{Binding LanguageVM.SelectedLanguage, Mode=TwoWay}"
+                IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2">
+                            <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+<!--SPARADE SÖKORD-->
+            <CollectionView 
+                        ItemsSource="{Binding SavedSearchVM.SavedKeywords}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SavedSearchVM.SelectedSavedSearch, Mode=TwoWay}"
+               
+                        ItemsLayout="VerticalList"
+                        VerticalOptions="Start"
+                        IsVisible="{Binding SavedSearchVM.AreSavedKeywordsVisible}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SavedSearch">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="🗑️"
+                                           BackgroundColor="Red"
+                                           Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="🗑️"
+                                           BackgroundColor="Red"
+                                           Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+
+                            <Border Padding="10" Margin="2"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+                                <Label Text="{Binding Keyword}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+<!--LÄNDER--><!--
+            <CollectionView ItemsSource="{Binding CountryVM.Countries}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding CountryVM.SelectedCountry, Mode=TwoWay}"
+                        IsVisible="{Binding CountryVM.IsCountryCollectionVisible}"
+                            VerticalOptions="Start">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:CountryDto">
+                        <Border Padding="10" Margin="2"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+                            <Label Text="{Binding Name}" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+--><!--KÄLLOR--><!--
+            <CollectionView ItemsSource="{Binding SourceVM.Sources}"
+                IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
+                SelectedItem="{Binding SourceVM.SelectedSource}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:SourceDto">
+                        <Label Text="{Binding Name}" Padding="10"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView 
+                    ItemsSource="{Binding CategoryVM.Categories}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding CategoryVM.SelectedCategory, Mode=TwoWay}"
+                    IsVisible="{Binding CategoryVM.IsCategoryVisible}"> 
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2">
+                            <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>-->
+
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="5" ItemsSource="{Binding NewsVM.Articles}" SelectionMode="None">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:News">
-                    <!-- Kortet för varje artikel -->
-                    <Frame Padding="8"
-                           Margin="0,4"
-                           CornerRadius="12"
-                           HasShadow="False"
-                           BorderColor="#E0E0E0">
+                <DataTemplate x:DataType="vm:ArticleViewModel">
+                    <Border Style="{StaticResource ArticleFrameStyle}">
+                        <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
+                            <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+                            <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
+                             TextColor="#888" Padding="0" HorizontalOptions="Start"
+                             Command="{Binding BindingContext.NewsVM.OpenInBrowserCommand, Source={x:Reference RootPage}}" 
+                             CommandParameter="{Binding Url}"
+                             IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
-                        <!-- Grid för bild + text -->
-                        <Grid x:Name="ArticleGrid"
-                              ColumnDefinitions="Auto, *"
-                              RowDefinitions="Auto">
-                            <Image Grid.Column="0"
-                                   HeightRequest="80"
-                                   WidthRequest="80"
-                         
-                                   Aspect="AspectFill"
-                                   BackgroundColor="#F0F0F0"
-                                   Source="{Binding ImageUrl}"/>
-
-                            <VerticalStackLayout Grid.Column="1"
-                                                 Spacing="4"
-                                                 HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       FontSize="14"
-                                       LineBreakMode="TailTruncation"
-                                       MaxLines="3"/>
-                                <Label Text="{Binding Description}"
-                                       FontSize="12"
-                                       TextColor="Black"
-                                       LineBreakMode="WordWrap"
-                                       MaxLines="4"/>
-                                <Label Text="{Binding Source}"
-                                       FontSize="12"
-                                       TextColor="Gray"/>
-                                <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}"
-                                       FontSize="11"
-                                       TextColor="DarkGray"/>
+                            <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Button Text="✕" FontSize="14" WidthRequest="32" HeightRequest="32"
+                                     BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
+                                     Style="{StaticResource ArticleButtonStyle}"
+                                     Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                     CommandParameter="{Binding .}" />
+                                    <Button Text="{Binding Source}" FontSize="12" Padding="6,2"
+                                     Style="{StaticResource ArticleButtonStyle}"
+                                     Command="{Binding BindingContext.NewsVM.OpenInBrowserCommand, Source={x:Reference RootPage}}"
+                                     CommandParameter="{Binding Url}" />
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
+                        </VerticalStackLayout>
 
-                            <!-- VisualStateManager för responsiv layout -->
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="WindowStates">
-                                    <VisualState Name="Narrow">
-                                        <VisualState.Setters>
-                                            <!-- Byt Grid till en kolumn (vertikal) när fönstret är smalt -->
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnDefinitions"
-                                                    Value="*, *"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="RowDefinitions"
-                                                    Value="Auto, Auto"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnSpacing"
-                                                    Value="0"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Wide">
-                                        <VisualState.Setters>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnDefinitions"
-                                                    Value="Auto, *"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="RowDefinitions"
-                                                    Value="Auto"/>
-                                            <Setter TargetName="ArticleGrid"
-                                                    Property="ColumnSpacing"
-                                                    Value="10"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-
-                        </Grid>
-                    </Frame>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.NewsVM.OpenArticleCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding Url}" />
+                        </Border.GestureRecognizers>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

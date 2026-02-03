@@ -1,54 +1,76 @@
-﻿using System.Net.Http.Json;
-using NewNews.DAL.Models;
+﻿using NewNews.DAL.Models;
 using NewNews.MAUI.Dto;
+using NewNews.MAUI.Services;
 
-namespace NewNews.DAL.Services
+public class NewsService : INewsService
 {
-    public class NewsService
-    {
-        private readonly HttpClient _http;
-        private const string ApiKey = "34c60333dc6e4b75823ff4348ac7e12a";
+    private readonly INewsApiClient _client;
 
-        public NewsService(HttpClient http)
+    public NewsService(INewsApiClient client)
+    {
+        _client = client;
+    }
+
+    public async Task<List<News>> GetNewsPageAsync(
+        int page,
+        int pageSize,
+        string query,
+        string? language,
+        string? category,
+        string? country,
+        string? sourceId)
+    {
+        List<ArticleDto> articles = new();
+
+        if (!string.IsNullOrEmpty(country))
         {
-            _http = http;
+            // HÄMTAR FRÅN TOPHEADLINES
+            var topResponse = await _client.GetTopHeadlinesByCountryAsync(
+                country,
+                query,
+                page,
+                pageSize);
+            if (topResponse?.Articles != null)
+                articles = topResponse.Articles;
+        }
+        else
+        {
+            // HÄMTAR FRÅN EVERYTHING (PRIMÄR)
+            var everythingResponse = await _client.GetEverythingAsync(
+                query,
+                language,
+                page,
+                pageSize,
+                sourceId: sourceId,
+                category: null);
+            if (everythingResponse?.Articles != null)
+                articles = everythingResponse.Articles;
         }
 
-        public async Task<List<News>> SearchAsync(string query)
+        // Manuella filter
+        if (!string.IsNullOrEmpty(category))
         {
-            if (string.IsNullOrWhiteSpace(query))
-                return new List<News>();
-
-            var encodedQuery = Uri.EscapeDataString(query);
-
-            var url =
-                $"https://newsapi.org/v2/everything" +
-                $"?q={encodedQuery}" +
-                $"&sortBy=publishedAt" +
-                $"&language=sv" +
-                $"&apiKey={ApiKey}";
-
-            var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
-
-            if (response?.Articles == null)
-                return new List<News>();
-
-            return response.Articles
-                .Select(a => new News
-                {
-                    Title = a.Title,
-                    Description = a.Description,
-                    Url = a.Url,
-                    ImageUrl = a.UrlToImage,
-                    Source = a.Source?.Name,
-                    PublishedAt = a.PublishedAt
-                })
+            articles = articles
+                .Where(a => a.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) == true)
                 .ToList();
         }
 
+        var result = articles.Select(a => new News
+        {
+            Title = a.Title,
+            Description = a.Description,
+            Url = a.Url,
+            ImageUrl = a.UrlToImage,
+            Source = a.Source?.Name,
+            Content = a.Content,
+            PublishedAt = a.PublishedAt
+        }).ToList();
 
+        return result;
+    }
 
-
-
+    public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
+    {
+        return await _client.GetSourcesByCountryAsync(country);
     }
 }

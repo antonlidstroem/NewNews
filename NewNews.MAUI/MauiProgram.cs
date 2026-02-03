@@ -1,6 +1,11 @@
-﻿using NewNews.MAUI.ViewModels;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewNews.DAL.Services;
+using NewNews.MAUI.Configuration;
+using NewNews.MAUI.Services;
+using NewNews.MAUI.ViewModels;
 
 namespace NewNews.MAUI
 {
@@ -17,22 +22,50 @@ namespace NewNews.MAUI
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton(sp =>
+            // Lägg till appsettings.json från embedded resource
+            var assembly = typeof(App).Assembly;
+            using var stream = assembly.GetManifestResourceStream("NewNews.MAUI.appsettings.json");
+
+            if (stream != null)
             {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
-                return client;
+                var config = new ConfigurationBuilder()
+                    .AddJsonStream(stream)
+                    .Build();
+
+                builder.Configuration.AddConfiguration(config);
+            }
+
+            // Bind AppSettings för starkt typad konfiguration
+            builder.Services.Configure<AppSettings>(builder.Configuration);
+
+            // SQLite-databas
+            builder.Services.AddSingleton<SearchKeywordService>(sp =>
+            {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "searchkeywords.db3");
+                return new SearchKeywordService(dbPath);
             });
-            builder.Services.AddSingleton<NewsService>();
+
+            // Registrera NewsApiClient med HttpClient
+            builder.Services.AddHttpClient<INewsApiClient, NewsApiClient>(client =>
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewNewsApp/1.0");
+            });
+
+            // Registrera Services
+            builder.Services.AddSingleton<IBrowserService, BrowserService>();
+            builder.Services.AddSingleton<INewsService, NewsService>();
+
+            // Registrera MainViewModel som singleton
             builder.Services.AddSingleton<MainViewModel>();
-            
+            builder.Services.AddSingleton<MainPage>();
 
-
-#if DEBUG
+            #if DEBUG
             builder.Logging.AddDebug();
-#endif
+            #endif
 
             return builder.Build();
         }
     }
+
 }
+
