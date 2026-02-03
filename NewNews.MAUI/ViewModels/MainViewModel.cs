@@ -1,272 +1,81 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using NewNews.DAL.Models;
-using NewNews.DAL.Services;
+﻿using NewNews.DAL.Services;
+using NewNews.MAUI.Services;
+using NewNews.MAUI.ViewModels;
 using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
     {
-        private readonly NewsService _newsService;
+        private readonly NewsQueryViewModel _query = new();
         private readonly SearchKeywordService _keywordService;
-        public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
-        public ObservableCollection<News> Articles { get; } = new();
 
-        [ObservableProperty] private string? searchQuery;
-        [ObservableProperty] private bool isBusy;
+        public LanguageViewModel LanguageVM { get; }
+        public CategoryViewModel CategoryVM { get; }
+        public CountryViewModel CountryVM { get; }
+        public SourceViewModel SourceVM { get; }
+        public NewsViewModel NewsVM { get; }
+        public SavedSearchViewModel SavedSearchVM { get; }
+        public UiStateViewModel UiStateVM { get; }
 
-        private bool hasMoreItems = true;
-        private int currentPage = 1;
-        private const int pageSize = 5;
-
-        public Dictionary<string, string> AvailableLanguages { get; } = new()
-    {
-        {"English", "en"},
-        {"Svenska", "sv"},
-        {"Deutsch", "de"},
-        {"Español", "es"},
-        {"Français", "fr"},
-        {"Italiano", "it"},
-        {"Nederlands", "nl"},
-        {"Norsk", "no"},
-        {"Português", "pt"},
-        {"Русский", "ru"},
-    };
-
-        // Dropdown-visning
-        public ObservableCollection<string> LanguageNames { get; }
-
-        [ObservableProperty]
-        private string selectedLanguage = "Swedish"; 
-
-        public ObservableCollection<string> Categories { get; } = new()
+        public MainViewModel(INewsService newsService,
+                             SearchKeywordService keywordService,
+                             IBrowserService browserService)
         {
-        "Allt",
-        "Business",
-        "Entertainment",
-        "General",
-        "Health",
-        "Science",
-        "Sports",
-        "Technology"
-         };
-
-        [ObservableProperty]
-        private string selectedCategory = "Allt";
-
-        public MainViewModel(NewsService newsService, SearchKeywordService keywordService)
-        {
-            _newsService = newsService;
             _keywordService = keywordService;
 
-            LanguageNames = new ObservableCollection<string>(AvailableLanguages.Keys);
+            // Skapa ViewModels i rätt ordning
+            CategoryVM = new CategoryViewModel(_query);
+            LanguageVM = new LanguageViewModel(_query, CategoryVM);
+            CountryVM = new CountryViewModel(_query);
+            SourceVM = new SourceViewModel(newsService, _query);
+            NewsVM = new NewsViewModel(newsService, browserService, _query);
+            SavedSearchVM = new SavedSearchViewModel(_keywordService, NewsVM, LanguageVM, CategoryVM, _query);
+            UiStateVM = new UiStateViewModel(LanguageVM, CountryVM, CategoryVM, SourceVM, SavedSearchVM);
 
-            Title = "Nyheter";
-            LoadSavedKeywords();
+            // Ladda sparade sökningar
+            _ = SavedSearchVM.LoadSavedKeywords();
 
-        }
+            // Uppdatera kategoriknappens synlighet baserat på valt språk
+            CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
 
-        [RelayCommand]
-        private async Task SearchNews()
-        {
-            Articles.Clear();
-            currentPage = 1;
-            hasMoreItems = true;
-
-            await LoadMoreNews(SearchQuery ?? "nyheter");
-        }
-
-        public async Task LoadMoreNews(string? query = "nyheter")
-        {
-            if (IsBusy || !hasMoreItems) return;
-            IsBusy = true;
-
-            string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
-
-            var news = await _newsService.GetNewsPageAsync(currentPage, pageSize, query, categoryFilter);
-
-            foreach (var item in news)
-                Articles.Add(item);
-
-            if (news.Count == 0)
+            // Lyssna på språkändringar
+            LanguageVM.PropertyChanged += async (s, e) =>
             {
-                hasMoreItems = false;
-            }
-            else
-            {
-                currentPage++;
-            }
-
-
-            IsBusy = false;
-        }
-
-        [RelayCommand]
-        public async Task LoadMoreNewsCommand()
-        {
-            await LoadMoreNews(SearchQuery ?? "nyheter");
-        }
-
-        private async void LoadSavedKeywords()
-        {
-            SavedKeywords.Clear();
-            var keywords = await _keywordService.GetAllKeywordsAsync();
-            foreach (var k in keywords)
-                SavedKeywords.Add(k);
-        }
-
-        [RelayCommand]
-        private async Task SearchByKeyword(SavedSearch search)
-        {
-            if (search == null) return;
-
-            SearchQuery = search.Keyword;
-            await SearchNews();
-        }
-
-
-        [RelayCommand]
-        private void ToggleNewsExpanded(News article)
-        {
-            if (article == null) return;
-
-            // Om du vill att bara en artikel kan vara öppen åt gången:
-            foreach (var a in Articles)
-                if (a != article)
-                    a.IsExpanded = false;
-
-            article.IsExpanded = !article.IsExpanded;
-        }
-
-        [RelayCommand]
-        private async Task SourceTapped(string? url)
-        {
-            if (!string.IsNullOrWhiteSpace(url))
-            {
-                // Navigera till WebView-sidan
-                if (Application.Current.MainPage is not null)
+                if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
                 {
-                    await Application.Current.MainPage.Navigation.PushAsync(new ArticleWebViewPage(url));
+                    await OnLanguageChangedAsync();
                 }
-            }
+            };
+
+            // Lyssna på kategoriändringar
+            CategoryVM.PropertyChanged += async (s, e) =>
+            {
+                if (e.PropertyName == nameof(CategoryVM.SelectedCategory))
+                    await OnCategoryChangedAsync();
+            };
+
+            // Lyssna på land-ändringar och uppdatera källor
+            CountryVM.PropertyChanged += async (s, e) =>
+            {
+                if (e.PropertyName == nameof(CountryVM.SelectedCountry))
+                {
+                    await SourceVM.LoadSourcesAsync(CountryVM.SelectedCountry?.Code);
+                    await OnCountryChangedAsync();
+                }
+            };
+
+            // Lyssna på källändringar och sök om
+            SourceVM.PropertyChanged += async (s, e) =>
+            {
+                if (e.PropertyName == nameof(SourceVM.SelectedSource))
+                    await OnSourceChangedAsync();
+            };
         }
 
-        [RelayCommand]
-        private async Task OpenInBrowser(string? url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                return;
-
-            await Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
-        }
-
-
-
-        private async Task OnCategoryChangedAsync()
-        {
-            Articles.Clear();
-            currentPage = 1;
-            hasMoreItems = true;
-
-            await LoadMoreNews(SearchQuery ?? "nyheter");
-        }
-
-        partial void OnSelectedLanguageChanged(string value)
-        {
-            if (AvailableLanguages.TryGetValue(value, out var langCode))
-                _newsService.Language = langCode;
-
-            SearchNewsCommand.Execute(null); 
-            OnPropertyChanged(nameof(IsCategoryVisible));
-        }
-
-        public bool IsCategoryVisible => SelectedLanguage == "English";
-
-        partial void OnSelectedCategoryChanged(string value)
-        {
-            _ = OnCategoryChangedAsync();
-        }
-
-        [RelayCommand]
-        private async Task SaveSearch()
-        {
-            if (string.IsNullOrWhiteSpace(SearchQuery))
-                return;
-
-            string? categoryToSave = IsCategoryVisible && SelectedCategory != "Allt" ? SelectedCategory : null;
-
-            await _keywordService.AddKeywordAsync(SearchQuery, SelectedLanguage, categoryToSave);
-
-            // Ladda om sparade sökningar
-            LoadSavedKeywords();
-        }
-
-        [ObservableProperty]
-        private SavedSearch? selectedSavedSearch;
-
-        partial void OnSelectedSavedSearchChanged(SavedSearch? value)
-        {
-            if (value == null) return;
-
-            SearchQuery = value.Keyword;
-            SelectedLanguage = value.Language;
-
-            if (!string.IsNullOrWhiteSpace(value.Category))
-                SelectedCategory = value.Category;
-            else
-                SelectedCategory = "Allt";
-
-            _ = SearchNews();
-        }
-
-
-
-        [RelayCommand]
-        private async Task DeleteSavedSearch(SavedSearch search)
-        {
-            if (search == null) return;
-
-            await _keywordService.DeleteKeywordAsync(search.Id);
-            LoadSavedKeywords();
-        }
-
-        private int _currentSavedIndex = 0;
-
-        [RelayCommand]
-        private void NextSavedSearch()
-        {
-            if (SavedKeywords.Count == 0) return;
-
-            _currentSavedIndex++;
-            if (_currentSavedIndex >= SavedKeywords.Count)
-                _currentSavedIndex = 0; // loopa tillbaka till första
-
-            SelectSavedSearchByIndex(_currentSavedIndex);
-        }
-
-        [RelayCommand]
-        private void PreviousSavedSearch()
-        {
-            if (SavedKeywords.Count == 0) return;
-
-            _currentSavedIndex--;
-            if (_currentSavedIndex < 0)
-                _currentSavedIndex = SavedKeywords.Count - 1; // loopa till sista
-
-            SelectSavedSearchByIndex(_currentSavedIndex);
-        }
-
-        private void SelectSavedSearchByIndex(int index)
-        {
-            if (index < 0 || index >= SavedKeywords.Count) return;
-
-            var saved = SavedKeywords[index];
-            SelectedSavedSearch = saved;
-        }
-
+        private Task OnLanguageChangedAsync() => NewsVM.SearchNews();
+        private Task OnCategoryChangedAsync() => NewsVM.SearchNews();
+        private Task OnCountryChangedAsync() => NewsVM.SearchNews();
+        private Task OnSourceChangedAsync() => NewsVM.SearchNews();
     }
 }

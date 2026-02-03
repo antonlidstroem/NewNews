@@ -4,9 +4,9 @@ using System.Text;
 
 namespace NewNews.MAUI.Dto
 {
-    public class SourceDto
+    public class SourcesResponseDto
     {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
+        public List<SourceDto> Sources { get; set; } = new();
     }
+
 }

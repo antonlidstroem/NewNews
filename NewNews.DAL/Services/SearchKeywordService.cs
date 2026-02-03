@@ -6,15 +6,21 @@ using SQLite;
 
 namespace NewNews.DAL.Services
 {
-    public class SearchKeywordService
+    public class SearchKeywordService : ISearchKeywordService
     {
         private readonly SQLiteAsyncConnection _db;
 
         public SearchKeywordService(string dbPath)
         {
             _db = new SQLiteAsyncConnection(dbPath);
+
+        }
+
+        public async Task InitAsync()
+        {
             _db.CreateTableAsync<SavedSearch>().Wait();
         }
+
 
         public Task<List<SavedSearch>> GetAllKeywordsAsync()
         {
@@ -23,7 +29,7 @@ namespace NewNews.DAL.Services
                       .ToListAsync();
         }
 
-        public Task AddKeywordAsync(string keyword, string language, string? category = null)
+        public Task AddKeywordAsync(string keyword, string? language, string? category = null)
         {
             if (string.IsNullOrWhiteSpace(keyword))
                 return Task.CompletedTask;
@@ -40,8 +46,5 @@ namespace NewNews.DAL.Services
         {
             return _db.DeleteAsync<SavedSearch>(id);
         }
-
-
-
     }
 }

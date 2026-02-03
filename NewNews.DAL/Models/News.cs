@@ -2,7 +2,7 @@
 
 namespace NewNews.DAL.Models
 {
-    public partial class News : ObservableObject
+    public class News
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
@@ -11,9 +11,5 @@ namespace NewNews.DAL.Models
         public string? Source { get; set; }
         public string? Content { get; set; }
         public DateTime PublishedAt { get; set; }
-
-        [ObservableProperty]
-        private bool isExpanded;
-
     }
 }

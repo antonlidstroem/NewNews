@@ -1,74 +1,76 @@
-﻿using System.Net.Http.Json;
-using NewNews.DAL.Models;
+﻿using NewNews.DAL.Models;
 using NewNews.MAUI.Dto;
+using NewNews.MAUI.Services;
 
-public class NewsService
+public class NewsService : INewsService
 {
-    private readonly HttpClient _http;
-    private const string ApiKey = "34c60333dc6e4b75823ff4348ac7e12a";
-    public string Language { get; set; } = "sv";
+    private readonly INewsApiClient _client;
 
-    public NewsService(HttpClient http)
+    public NewsService(INewsApiClient client)
     {
-        _http = http;
+        _client = client;
     }
 
-    // Hämta en "sida" nyheter med ett sökord (default: "nyheter")
-    public async Task<List<News>> GetNewsPageAsync(int page = 1, int pageSize = 10, string query = "nyheter", string? category = null)
+    public async Task<List<News>> GetNewsPageAsync(
+        int page,
+        int pageSize,
+        string query,
+        string? language,
+        string? category,
+        string? country,
+        string? sourceId)
     {
-        try
+        List<ArticleDto> articles = new();
+
+        if (!string.IsNullOrEmpty(country))
         {
-            string url;
-
-            if (!string.IsNullOrEmpty(category) && category.ToLower() != "allt")
-            {
-                // Top-headlines med kategori
-                url = $"https://newsapi.org/v2/top-headlines?language={Language}&pageSize={pageSize}&page={page}&apiKey={ApiKey}";
-
-                if (!string.IsNullOrWhiteSpace(query))
-                    url += $"&q={Uri.EscapeDataString(query)}";
-
-                url += $"&category={category.ToLower()}";
-
-            }
-            else
-            {
-                // Everything utan kategori
-                url = $"https://newsapi.org/v2/everything?q={Uri.EscapeDataString(query)}&language={Language}&sortBy=publishedAt&pageSize={pageSize}&page={page}&apiKey={ApiKey}";
-            }
-
-            var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
-
-            if (response?.Articles == null || response.Articles.Count == 0)
-                return new List<News>();
-
-            return response.Articles.Select(a => new News
-            {
-                Title = a.Title,
-                Description = a.Description,
-                Url = a.Url,
-                ImageUrl = a.UrlToImage,
-                Source = a.Source?.Name,
-                Content = a.CleanContent,
-                PublishedAt = a.PublishedAt
-            }).ToList();
+            // HÄMTAR FRÅN TOPHEADLINES
+            var topResponse = await _client.GetTopHeadlinesByCountryAsync(
+                country,
+                query,
+                page,
+                pageSize);
+            if (topResponse?.Articles != null)
+                articles = topResponse.Articles;
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine($"NewsService error: {ex.Message}");
-            return new List<News>();
+            // HÄMTAR FRÅN EVERYTHING (PRIMÄR)
+            var everythingResponse = await _client.GetEverythingAsync(
+                query,
+                language,
+                page,
+                pageSize,
+                sourceId: sourceId,
+                category: null);
+            if (everythingResponse?.Articles != null)
+                articles = everythingResponse.Articles;
         }
+
+        // Manuella filter
+        if (!string.IsNullOrEmpty(category))
+        {
+            articles = articles
+                .Where(a => a.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+        }
+
+        var result = articles.Select(a => new News
+        {
+            Title = a.Title,
+            Description = a.Description,
+            Url = a.Url,
+            ImageUrl = a.UrlToImage,
+            Source = a.Source?.Name,
+            Content = a.Content,
+            PublishedAt = a.PublishedAt
+        }).ToList();
+
+        return result;
     }
 
-
-
-
-    // Sökning med pagination (tillåter eget sökord)
-    public async Task<List<News>> SearchNewsPageAsync(string query, int page = 1, int pageSize = 10)
+    public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
     {
-        if (string.IsNullOrWhiteSpace(query))
-            return new List<News>();
-
-        return await GetNewsPageAsync(page, pageSize, query);
+        return await _client.GetSourcesByCountryAsync(country);
     }
 }
