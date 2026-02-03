@@ -78,5 +78,4 @@ namespace NewNews.MAUI.ViewModels
             _saved.AreSavedKeywordsVisible = newState;
         }
     }
-
 }

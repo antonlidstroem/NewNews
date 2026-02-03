@@ -12,9 +12,6 @@ namespace NewNews.MAUI.Services
         public NewsApiClient(HttpClient http, IConfiguration config)
         {
             _http = http;
-            ////_apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing");
-            //_apiKey = "34c60333dc6e4b75823ff4348ac7e12a";
-
             // Läs API-nyckel från appsettings.json
             _apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing from configuration");
 
@@ -44,6 +41,7 @@ namespace NewNews.MAUI.Services
         }
 
 
+        // Används vid filtration på category och country. Och när appen startar.
         public async Task<NewsApiResponseDto?> GetTopHeadlinesByCountryAsync(
             string country, string? query, int page, int pageSize)
         {
@@ -55,6 +53,7 @@ namespace NewNews.MAUI.Services
             return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
         }
 
+        // Hämtar källor baserat på land
         public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
         {
             var url = $"https://newsapi.org/v2/sources?country={country}&apiKey={_apiKey}";

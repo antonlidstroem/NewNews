@@ -9,7 +9,7 @@ namespace NewNews.MAUI.Converters
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool b)
-                return !b; // invertera bool
+                return !b;
             return true;
         }
 

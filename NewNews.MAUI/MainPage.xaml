@@ -7,39 +7,36 @@
              x:Class="NewNews.MAUI.MainPage"
              x:Name="RootPage">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto, Auto,*">
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto, Auto,*"
+          BackgroundColor="{StaticResource Tertiary}">
 
 
         <Label Text="{Binding Title}" 
        HorizontalOptions="Center"
        VerticalOptions="Center"/>
 
-        <Label
-    Grid.Row="4"
-    Text="{Binding NewsVM.Articles.Count}"
-    FontSize="24"
-    TextColor="Red"
-/>
-
-
         <HorizontalStackLayout Grid.Row="0" Padding="1" Spacing="10" HorizontalOptions="Center">
-            <Entry Placeholder="Search..." WidthRequest="150"  Text="{Binding NewsVM.SearchQuery}"/>
-            <Button Text="🔍" Padding="2" Command="{Binding NewsVM.SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-            <Button Text="💾" Padding="2" Command="{Binding SavedSearchVM.SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Entry Placeholder="Search..." WidthRequest="200"  Text="{Binding NewsVM.SearchQuery}" BackgroundColor="White" TextColor="{StaticResource Gray950}"/>
             <Button Text="❌" Padding="2" Command="{Binding NewsVM.ClearSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
         </HorizontalStackLayout>
 
 <!--SPARADE SÖKORD KNAPP-->
         <HorizontalStackLayout Grid.Row="1" Padding="2" Spacing="10" HorizontalOptions="Center">
+            <Button Text="🔍" Padding="2" Command="{Binding NewsVM.SearchNewsCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            <Button Text="💾" Padding="2" Command="{Binding SavedSearchVM.SaveSearchCommand}" Style="{StaticResource ArticleButtonStyle}"/>
+            
             <Button Text="⭐" Command="{Binding UiStateVM.ToggleSavedCommand}" Style="{StaticResource ArticleButtonStyle}"/>
             
 <!--SPRÅK KNAPP-->
             <Button Text="🌐" Command="{Binding UiStateVM.ToggleLanguagesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
-            <Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>
+            <!--<Label Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold"/>-->
+
+            <Button Text="{Binding LanguageVM.SelectedLanguage}" VerticalOptions="Center" FontAttributes="Bold" Style="{StaticResource ArticleLinkButtonStyle}"/>
 
 
 
-<!--LÄNDER KNAPP--><!--
+            <!--LÄNDER KNAPP--><!--
             <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />-->
             
 <!--KÄLLOR KNAPP--><!--
@@ -63,16 +60,14 @@
                 SelectionMode="Single"
                 SelectedItem="{Binding LanguageVM.SelectedLanguage, Mode=TwoWay}"
                 IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="x:String">
-                                    <Border Padding="10" Margin="2">
-                                        <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Padding="10" Margin="2">
+                            <Label Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Center"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-
 
 <!--SPARADE SÖKORD-->
             <CollectionView 

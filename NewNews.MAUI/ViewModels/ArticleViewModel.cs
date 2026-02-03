@@ -21,16 +21,19 @@ namespace NewNews.MAUI.ViewModels
         public string? Url => Model.Url;
         public string? ImageUrl => Model.ImageUrl;
         public string? Source => Model.Source;
-        //public string? Content => Model.Content;
+
         public DateTime PublishedAt => Model.PublishedAt;
 
         // UI-state
+        // Expand/collapse content
         [ObservableProperty]
         private bool isExpanded;
 
+        // WebView height
         [ObservableProperty]
         private double webViewHeight = 1;
 
+        // Cleaned content for display
         public string Content => Clean(Model.Content);
 
         private static string Clean(string? content)

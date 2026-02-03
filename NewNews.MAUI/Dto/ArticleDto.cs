@@ -10,6 +10,7 @@
         public string? Content { get; set; }
         public SourceDto Source { get; set; } = new();
 
+        // För att filtrera på kategori i framtiden
         public string? Category { get; set; }
     }
 }

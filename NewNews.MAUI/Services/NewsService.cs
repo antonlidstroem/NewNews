@@ -41,24 +41,19 @@ public class NewsService : INewsService
                 language,
                 page,
                 pageSize,
-                sourceId: sourceId,  // FIX: Skicka sourceId till API:et
+                sourceId: sourceId,
                 category: null);
             if (everythingResponse?.Articles != null)
                 articles = everythingResponse.Articles;
         }
 
-        // Manuella filter (endast för kategori när det inte stöds av API:et)
+        // Manuella filter
         if (!string.IsNullOrEmpty(category))
         {
             articles = articles
                 .Where(a => a.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) == true)
                 .ToList();
         }
-
-        // Filtrera inte på sourceId här - det görs redan av API:et
-        // Ta bort denna kod:
-        // if (!string.IsNullOrEmpty(sourceId))
-        //     articles = articles.Where(a => string.Equals(a.Source?.Id, sourceId, StringComparison.OrdinalIgnoreCase)).ToList();
 
         var result = articles.Select(a => new News
         {

@@ -29,7 +29,7 @@ namespace NewNews.MAUI.ViewModels
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
-        private const int pageSize = 15;
+        private const int pageSize = 50;
 
         public NewsViewModel(
             INewsService newsService, 

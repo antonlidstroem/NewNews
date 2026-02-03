@@ -36,18 +36,17 @@ namespace NewNews.MAUI.ViewModels
         public async Task LoadSourcesAsync(string? countryCode)
         {
             Sources.Clear();
-            SelectedSource = null; // Reset valet när källor laddas om
+            SelectedSource = null; 
             IsSourceButtonVisible = false;
 
             if (string.IsNullOrWhiteSpace(countryCode))
             {
-                _query.SourceId = null; // Nollställ sourceId när inget land är valt
+                _query.SourceId = null; 
                 return;
             }
 
             var sources = await _newsService.GetSourcesByCountryAsync(countryCode);
 
-            // Lägg till "Alla källor" som första alternativ
             Sources.Add(new SourceDto { Id = string.Empty, Name = "Alla källor" });
 
             foreach (var s in sources)
@@ -58,10 +57,7 @@ namespace NewNews.MAUI.ViewModels
 
         partial void OnSelectedSourceChanged(SourceDto? value)
         {
-            // Stäng CollectionView när ett val görs
             IsSourceCollectionVisible = false;
-
-            // Uppdatera query med sourceId (null om "Alla källor" valts)
             _query.SourceId = string.IsNullOrWhiteSpace(value?.Id) ? null : value.Id;
         }
     }

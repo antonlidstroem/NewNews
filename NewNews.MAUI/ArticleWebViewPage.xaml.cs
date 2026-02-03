@@ -20,6 +20,5 @@ public partial class ArticleWebViewPage : ContentPage
     public ArticleWebViewPage()
 	{
 		InitializeComponent();
-		//WebViewControl.Source = url;
     }
 }

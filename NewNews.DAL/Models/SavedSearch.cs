@@ -17,7 +17,8 @@ namespace NewNews.DAL.Models
 
         public string? Language { get; set; } = "sv";
 
-        public string? Category { get; set; } = null; // bara för engelska
+        // För att kunna filtrera på kategori i framtiden
+        public string? Category { get; set; } = null;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

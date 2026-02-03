@@ -16,7 +16,6 @@ namespace NewNews.MAUI.Dto
             return obj is CountryDto dto &&
                    Code == dto.Code;
         }
-
         public override int GetHashCode()
         {
             return Code.GetHashCode();

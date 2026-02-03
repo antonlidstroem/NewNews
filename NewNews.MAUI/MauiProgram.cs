@@ -7,11 +7,8 @@ using NewNews.MAUI.Configuration;
 using NewNews.MAUI.Services;
 using NewNews.MAUI.ViewModels;
 
-
-
 namespace NewNews.MAUI
 {
-
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
@@ -24,9 +21,6 @@ namespace NewNews.MAUI
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
-
-            ////Lägg till appsettings.json
-            //builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             // Lägg till appsettings.json från embedded resource
             var assembly = typeof(App).Assembly;

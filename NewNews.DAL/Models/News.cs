@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-// DAL/Models/News.cs
 namespace NewNews.DAL.Models
 {
     public class News

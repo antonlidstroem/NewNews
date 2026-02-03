@@ -11,10 +11,13 @@ namespace NewNews.MAUI.ViewModels
 {
     public partial class CategoryViewModel : BaseViewModel
     {
+        // Tillgängliga kategorier
         public ObservableCollection<string> Categories { get; } = new()
         {
             "Allt","Business","Entertainment","General","Health","Science","Sports","Technology"
         };
+
+
         [ObservableProperty] 
         private string selectedCategory = "Allt";
 
