@@ -8,22 +8,19 @@ namespace NewNews.MAUI.ViewModels
 {
     public partial class UiStateViewModel : BaseViewModel
     {
-
-        private UiStateViewModel _uiState = null!;
-        public void SetUiState(UiStateViewModel uiState) => _uiState = uiState;
-
         private readonly LanguageViewModel _language;
         private readonly CountryViewModel _country;
         private readonly CategoryViewModel _category;
         private readonly SourceViewModel _source;
         private readonly SavedSearchViewModel _saved;
 
+
         public UiStateViewModel(
-        LanguageViewModel language,
-        CountryViewModel country,
-        CategoryViewModel category,
-        SourceViewModel source,
-        SavedSearchViewModel saved)
+            LanguageViewModel language,
+            CountryViewModel country,
+            CategoryViewModel category,
+            SourceViewModel source,
+            SavedSearchViewModel saved)
         {
             _language = language;
             _country = country;
@@ -68,8 +65,9 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         private void ToggleSources()
         {
+            bool newState = !_source.IsSourceCollectionVisible;
             CloseAll();
-            _source.IsSourceCollectionVisible = true;
+            _source.IsSourceCollectionVisible = newState;
         }
 
         [RelayCommand]

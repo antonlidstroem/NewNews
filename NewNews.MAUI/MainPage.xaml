@@ -43,9 +43,9 @@
             <Button Text="🌍" Command="{Binding UiStateVM.ToggleCountriesCommand}" Style="{StaticResource ArticleButtonStyle}" />
             
 <!--KÄLLOR KNAPP-->
-            <!--<Button Text="📰"
+            <Button Text="📰"
                     IsVisible="{Binding IsSourceButtonVisible}"
-                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>-->
+                    Command="{Binding UiStateVM.ToggleSourcesCommand}" Style="{StaticResource ArticleButtonStyle}"/>
 
 <!--KATEGORIER KNAPP-->
             <Button Text="Kategori"
@@ -164,37 +164,36 @@
                         <VerticalStackLayout Style="{StaticResource ArticleVerticalStackStyle}">
                             <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
                             <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" BackgroundColor="#F0F0F0"
-                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding Description}" Style="{StaticResource DescriptionLabelStyle}"
-                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Button Text="{Binding Source}" Style="{StaticResource SourceLabelStyle}" BackgroundColor="Transparent"
-                                    TextColor="#888" Padding="0" HorizontalOptions="Start"
-                                    Command="{Binding BindingContext.SourceTappedCommand, Source={x:Reference RootPage}}" CommandParameter="{Binding Url}"
-                                    IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                             TextColor="#888" Padding="0" HorizontalOptions="Start"
+                             Command="{Binding BindingContext.NewsVM.OpenInBrowserCommand, Source={x:Reference RootPage}}" 
+                             CommandParameter="{Binding Url}"
+                             IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
                             <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" Style="{StaticResource PublishedAtLabelStyle}"
-                                   IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
+                            IsVisible="{Binding IsExpanded, Converter={StaticResource InverseBoolConverter}}" />
 
                             <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="5">
                                 <HorizontalStackLayout Spacing="5">
                                     <Button Text="✕" FontSize="14" WidthRequest="32" HeightRequest="32"
-                                            BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
-                                            Style="{StaticResource ArticleButtonStyle}"
-                                            Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
-                                            CommandParameter="{Binding .}" />
+                                     BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="16"
+                                     Style="{StaticResource ArticleButtonStyle}"
+                                     Command="{Binding BindingContext.ToggleNewsExpandedCommand, Source={x:Reference RootPage}}"
+                                     CommandParameter="{Binding .}" />
                                     <Button Text="{Binding Source}" FontSize="12" Padding="6,2"
-                                            Style="{StaticResource ArticleButtonStyle}"
-                                            Command="{Binding BindingContext.OpenInBrowserCommand, Source={x:Reference RootPage}}"
-                                            CommandParameter="{Binding Url}" />
+                                     Style="{StaticResource ArticleButtonStyle}"
+                                     Command="{Binding BindingContext.NewsVM.OpenInBrowserCommand, Source={x:Reference RootPage}}"
+                                     CommandParameter="{Binding Url}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
 
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.OpenArticleCommand, Source={x:Reference RootPage}}"
-                          CommandParameter="{Binding Url}" />
+                            <TapGestureRecognizer Command="{Binding BindingContext.NewsVM.OpenArticleCommand, Source={x:Reference RootPage}}"
+                                           CommandParameter="{Binding Url}" />
                         </Border.GestureRecognizers>
-
-
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

@@ -13,7 +13,7 @@ namespace NewNews.MAUI.ViewModels
     public partial class LanguageViewModel : BaseViewModel
     {
         private readonly NewsQueryViewModel _query;
-        private readonly UiStateViewModel _uiState;
+        private readonly CategoryViewModel _category;
         public Dictionary<string, string> AvailableLanguages { get; } = new()
     {
         {"English", "en"},
@@ -41,22 +41,20 @@ namespace NewNews.MAUI.ViewModels
             ? code
             : null;
 
-        public LanguageViewModel(NewsQueryViewModel query, UiStateViewModel uiState)
+        public LanguageViewModel(NewsQueryViewModel query, CategoryViewModel category)
         {
             LanguageNames.Add("Allt");
             foreach (var lang in AvailableLanguages.Keys)
                 LanguageNames.Add(lang);
             _query = query;
-            _uiState = uiState;
+            _category = category;
         }
 
         partial void OnSelectedLanguageChanged(string value)
         {
-            _uiState.CloseAll();
             IsLanguageCollectionVisible = false;
             _query.LanguageCode = CurrentLanguageCode;
-            
-
+            _category.UpdateButtonVisibility(value);
         }
     }
 }

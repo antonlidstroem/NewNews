@@ -12,8 +12,11 @@ namespace NewNews.MAUI.Services
         public NewsApiClient(HttpClient http, IConfiguration config)
         {
             _http = http;
-            //_apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing");
-            _apiKey = "34c60333dc6e4b75823ff4348ac7e12a";
+            ////_apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing");
+            //_apiKey = "34c60333dc6e4b75823ff4348ac7e12a";
+
+            // Läs API-nyckel från appsettings.json
+            _apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing from configuration");
 
             if (!_http.DefaultRequestHeaders.Contains("User-Agent"))
             {
@@ -35,7 +38,7 @@ namespace NewNews.MAUI.Services
             if (!string.IsNullOrEmpty(sourceId))
                 url += $"&sources={sourceId}";
 
-            // category stöds inte i everything-endpoint, så vi kan ignorera det här
+            // category stöds inte i everything-endpoint
 
             return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
         }

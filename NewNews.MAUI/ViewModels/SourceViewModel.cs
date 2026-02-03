@@ -31,11 +31,11 @@ namespace NewNews.MAUI.ViewModels
             _newsService = newsService;
             _query = query;
 
-            _query.PropertyChanged += async (_, e) =>
-            {
-                if (e.PropertyName == nameof(NewsQueryViewModel.CountryCode))
-                    await LoadSourcesAsync(_query.CountryCode);
-            };
+            //_query.PropertyChanged += async (_, e) =>
+            //{
+            //    if (e.PropertyName == nameof(NewsQueryViewModel.CountryCode))
+            //        await LoadSourcesAsync(_query.CountryCode);
+            //};
         }
 
 
@@ -54,6 +54,12 @@ namespace NewNews.MAUI.ViewModels
                 Sources.Add(s);
 
             IsSourceButtonVisible = Sources.Any();
+        }
+
+        partial void OnSelectedSourceChanged(SourceDto? value)
+        {
+            IsSourceCollectionVisible = false;
+            _query.SourceId = value?.Id;
         }
     }
 }

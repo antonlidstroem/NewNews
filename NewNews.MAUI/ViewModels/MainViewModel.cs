@@ -7,7 +7,6 @@ namespace NewNews.MAUI.ViewModels
     public partial class MainViewModel : BaseViewModel
     {
         private readonly NewsQueryViewModel _query = new();
-
         private readonly SearchKeywordService _keywordService;
 
         public LanguageViewModel LanguageVM { get; }
@@ -22,10 +21,10 @@ namespace NewNews.MAUI.ViewModels
                              SearchKeywordService keywordService,
                              IBrowserService browserService)
         {
+            // Initialize view models
             _keywordService = keywordService;
-
-            LanguageVM = new LanguageViewModel(_query);
             CategoryVM = new CategoryViewModel(_query);
+            LanguageVM = new LanguageViewModel(_query, CategoryVM);
             CountryVM = new CountryViewModel(_query);
             SourceVM = new SourceViewModel(newsService, _query);
             NewsVM = new NewsViewModel(newsService, browserService, _query);
@@ -33,18 +32,22 @@ namespace NewNews.MAUI.ViewModels
 
             UiStateVM = new UiStateViewModel(LanguageVM, CountryVM, CategoryVM, SourceVM, SavedSearchVM);
 
-
+            // Load saved keywords on startup
             _ = SavedSearchVM.LoadSavedKeywords();
 
+            // Update button visibility based on selected language
+            CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
+
+            // Subscribe to property changed events
             LanguageVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
                 {
-                    CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
                     await OnLanguageChangedAsync();
                 }
             };
 
+            
             CategoryVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(CategoryVM.SelectedCategory))

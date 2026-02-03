@@ -22,7 +22,7 @@ namespace NewNews.MAUI.ViewModels
         public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
 
         [ObservableProperty] private SavedSearch? selectedSavedSearch;
-        [ObservableProperty] private bool areSavedKeywordsVisible;
+        [ObservableProperty] public bool areSavedKeywordsVisible;
 
         public SavedSearchViewModel(SearchKeywordService keywordService,
                                     NewsViewModel newsVM,
@@ -53,7 +53,6 @@ namespace NewNews.MAUI.ViewModels
             _query.SearchQuery = search.Keyword;
             _query.LanguageCode = MapLanguage(search.Language);
             _query.Category = search.Category;
-
             _newsVM.SelectedCategory = _categoryVM.SelectedCategory;
             await _newsVM.SearchNews();
 
@@ -89,6 +88,8 @@ namespace NewNews.MAUI.ViewModels
         partial void OnSelectedSavedSearchChanged(SavedSearch? value)
         {
             if (value == null) return;
+
+            AreSavedKeywordsVisible = false;
 
             _newsVM.SearchQuery = value.Keyword;
             _languageVM.SelectedLanguage = value.Language;
