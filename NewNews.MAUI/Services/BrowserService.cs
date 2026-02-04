@@ -9,5 +9,4 @@ namespace NewNews.MAUI.Services
         public Task OpenAsync(string url) =>
             Browser.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
     }
-
 }

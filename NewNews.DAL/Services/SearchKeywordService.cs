@@ -18,10 +18,8 @@ namespace NewNews.DAL.Services
 
         public async Task InitAsync()
         {
-            //_db.CreateTableAsync<SavedSearch>().Wait();
             await _db.CreateTableAsync<SavedSearch>();
         }
-
 
         public Task<List<SavedSearch>> GetAllKeywordsAsync()
         {
@@ -30,6 +28,7 @@ namespace NewNews.DAL.Services
                       .ToListAsync();
         }
 
+        
         public Task AddKeywordAsync(string keyword, string? language, string? category = null)
         {
             if (string.IsNullOrWhiteSpace(keyword))
