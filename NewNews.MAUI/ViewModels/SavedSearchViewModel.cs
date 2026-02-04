@@ -9,7 +9,7 @@ namespace NewNews.MAUI.ViewModels
 {
     public partial class SavedSearchViewModel : BaseViewModel
     {
-        private readonly SearchKeywordService _keywordService;
+        private readonly ISearchKeywordService _keywordService;
         private readonly NewsViewModel _newsVM;
         private readonly LanguageViewModel _languageVM;
         private readonly NewsQueryViewModel _query;
@@ -19,7 +19,7 @@ namespace NewNews.MAUI.ViewModels
         [ObservableProperty] private SavedSearch? selectedSavedSearch;
         [ObservableProperty] public bool areSavedKeywordsVisible;
 
-        public SavedSearchViewModel(SearchKeywordService keywordService,
+        public SavedSearchViewModel(ISearchKeywordService keywordService,
                                     NewsViewModel newsVM,
                                     LanguageViewModel languageVM,
                                     NewsQueryViewModel query)
@@ -63,10 +63,16 @@ namespace NewNews.MAUI.ViewModels
 
         public async Task LoadSavedKeywords()
         {
-            SavedKeywords.Clear();
             var keywords = await _keywordService.GetAllKeywordsAsync();
-            foreach (var k in keywords)
-                SavedKeywords.Add(k);
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                SavedKeywords.Clear();
+
+                foreach (var k in keywords)
+                    SavedKeywords.Add(k);
+            });
         }
+
     }
 }

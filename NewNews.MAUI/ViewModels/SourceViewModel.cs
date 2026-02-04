@@ -25,9 +25,10 @@ namespace NewNews.MAUI.ViewModels
         {
             _newsService = newsService;
             _query = query;
-            _ = LoadSourcesAsync();
+            _ = SafeLoadSources();
         }
 
+        // Metod för att ladda alla källor
         public async Task LoadSourcesAsync()
         {
             try
@@ -44,33 +45,35 @@ namespace NewNews.MAUI.ViewModels
             }
         }
 
+        // Metod för att filtrera källor baserat på språk
         public void FilterSourcesByLanguage(string? languageCode)
         {
-            Sources.Clear();
-
-            // Alltid lägg till "Alla källor"
-            Sources.Add(new SourceDto { Id = string.Empty, Name = "Alla källor" });
-
-            if (string.IsNullOrEmpty(languageCode))
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                // Visa alla källor
-                foreach (var s in _allSources)
-                    Sources.Add(s);
-            }
-            else
-            {
-                // Filtrera källor baserat på språk
-                var filteredSources = _allSources
-                    .Where(s => s.Language?.Equals(languageCode, StringComparison.OrdinalIgnoreCase) == true)
-                    .ToList();
+                Sources.Clear();
 
-                foreach (var s in filteredSources)
-                    Sources.Add(s);
+                Sources.Add(new SourceDto { Id = string.Empty, Name = "Alla källor" });
 
-                System.Diagnostics.Debug.WriteLine($"Filtered to {filteredSources.Count} sources for language: {languageCode}");
-            }
+                if (string.IsNullOrEmpty(languageCode))
+                {
+                    foreach (var s in _allSources)
+                        Sources.Add(s);
+                }
+                else
+                {
+                    var filteredSources = _allSources
+                        .Where(s => s.Language?.Equals(languageCode, StringComparison.OrdinalIgnoreCase) == true)
+                        .ToList();
+
+                    foreach (var s in filteredSources)
+                        Sources.Add(s);
+
+                    System.Diagnostics.Debug.WriteLine($"Filtered to {filteredSources.Count} sources for language: {languageCode}");
+                }
+            });
         }
 
+        // Partial metod som körs när SelectedSource ändras
         partial void OnSelectedSourceChanged(SourceDto? value)
         {
             IsSourceCollectionVisible = false;
@@ -78,5 +81,19 @@ namespace NewNews.MAUI.ViewModels
 
             System.Diagnostics.Debug.WriteLine($"Source changed to: {value?.Name ?? "All"}");
         }
+
+        // Säker metod för att ladda källor med felhantering
+        private async Task SafeLoadSources()
+        {
+            try
+            {
+                await LoadSourcesAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
     }
+
 }

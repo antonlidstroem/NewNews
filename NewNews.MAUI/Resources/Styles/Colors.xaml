@@ -6,15 +6,15 @@
     <!-- Primära färger - Djup blå ton för professionell nyhetskänsla -->
     <Color x:Key="Primary">#1E3A8A</Color>
     <!-- Djup blå -->
-    <Color x:Key="PrimaryDark">#1E40AF</Color>
+    <Color x:Key="PrimaryDark">#BFC9D1</Color>
     <!-- Ljusare blå för mörkt läge -->
-    <Color x:Key="PrimaryLight">#3B82F6</Color>
+    <Color x:Key="PrimaryLight">#EAEFEF</Color>
     <!-- Ljus accent blå -->
 
     <!-- Sekundära färger - Varm orange för kontrast -->
-    <Color x:Key="Secondary">#F59E0B</Color>
+    <Color x:Key="Secondary">#FF9B51</Color>
     <!-- Amber/Orange -->
-    <Color x:Key="SecondaryDark">#D97706</Color>
+    <Color x:Key="SecondaryDark">#FAB95B</Color>
     <!-- Mörkare orange -->
 
     <!-- Accent färger -->

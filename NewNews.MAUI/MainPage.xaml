@@ -7,13 +7,13 @@
              x:Class="NewNews.MAUI.MainPage"
              x:Name="RootPage">
 
-    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,Auto,*"
+    <Grid Padding="5" RowDefinitions="Auto,Auto,Auto,Auto,*"
           BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}">
 
         <!-- Sökfält -->
         <Border Grid.Row="0" 
-                Padding="12,8" 
-                Margin="0,5"
+                Padding="5,8" 
+                Margin="5,0"               
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource DarkGray}}"
                 StrokeThickness="0"
                 StrokeShape="RoundRectangle 16">
@@ -25,7 +25,7 @@
                         Opacity="0.1"/>
             </Border.Shadow>
 
-            <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+            <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto">
                 <Entry Grid.Column="0"
                     Placeholder="Sök nyheter..." 
                        Text="{Binding NewsVM.SearchQuery}" 
@@ -33,75 +33,86 @@
                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource PrimaryDark}}"
                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
                        ReturnCommand="{Binding NewsVM.SearchNewsCommand}"
-                       VerticalOptions="Center"/>
+                       VerticalOptions="Center"
+                       Margin="5, 0"/>
 
-                <!-- Endpoint Toggle -->
-                <ImageButton Grid.Column="1"
-                         WidthRequest="40"
-                         HeightRequest="40"
-                         Padding="8"
-                         CornerRadius="8"
-                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray800}}"
-                         Command="{Binding NewsVM.ToggleEndpointCommand}">
-                    <ImageButton.Triggers>
-                        <DataTrigger TargetType="ImageButton"
-                     Binding="{Binding NewsVM.SelectedEndpoint}"
-                     Value="everything">
-                            <Setter Property="Source" Value="everything.png"/>
-                        </DataTrigger>
 
-                        <DataTrigger TargetType="ImageButton"
-                     Binding="{Binding NewsVM.SelectedEndpoint}"
-                     Value="top-headlines">
-                            <Setter Property="Source" Value="headline.png"/>
-                        </DataTrigger>
-                    </ImageButton.Triggers>
-                </ImageButton>
 
                 <ImageButton Grid.Column="2"
                             Source="search.png" 
                             Command="{Binding NewsVM.SearchNewsCommand}"
                             Style="{StaticResource IconButtonStyle}"
-                            WidthRequest="40"
-                            HeightRequest="40"/>
+                             Margin="5, 0"/>
                 <ImageButton Grid.Column="3"
                             Source="delete.png" 
                             Command="{Binding NewsVM.ClearSearchCommand}"
                             Style="{StaticResource IconButtonStyle}"
-                            WidthRequest="40"
-                            HeightRequest="40"/>
+                             Margin="5, 0"/>
+
+                    <ImageButton Grid.Column="4"
+                                 Source="star.png" 
+                            Command="{Binding SavedSearchVM.SaveSearchCommand}"
+                            Style="{StaticResource IconButtonStyle}"
+                                 Margin="5, 0"/>
+
+
+
             </Grid>
         </Border>
 
-        <!-- Endpoint väljare (Everything / Top Headlines) -->
-        <!--
-        <HorizontalStackLayout Grid.Row="1" Padding="5" Spacing="8" HorizontalOptions="Center">
-            <Label Text="Källa:" VerticalOptions="Center" FontSize="12"/>
-            <Picker ItemsSource="{Binding NewsVM.Endpoints}"
-                    SelectedItem="{Binding NewsVM.SelectedEndpoint}"
-                    WidthRequest="150"
-                    FontSize="12"/>
-        </HorizontalStackLayout>-->
-
         <!-- Filterknappar -->
         <HorizontalStackLayout Grid.Row="1" Padding="5" Spacing="8" HorizontalOptions="Center">
-            <ImageButton Source="star.png" 
-                        Command="{Binding SavedSearchVM.SaveSearchCommand}"
-                        Style="{StaticResource IconButtonStyle}"/>
+
+            <!-- Endpoint Toggle -->
+            <VerticalStackLayout>
+                <ImageButton Grid.Column="1"
+                     Style="{StaticResource FilterIconButtonStyle}"
+                     Command="{Binding NewsVM.ToggleEndpointCommand}">
+                    <ImageButton.Triggers>
+                        <DataTrigger TargetType="ImageButton"
+                         Binding="{Binding NewsVM.SelectedEndpoint}"
+                         Value="everything">
+                            <Setter Property="Source" Value="everything.png"/>
+                        </DataTrigger>
+
+                        <DataTrigger TargetType="ImageButton"
+                         Binding="{Binding NewsVM.SelectedEndpoint}"
+                         Value="top-headlines">
+                            <Setter Property="Source" Value="headline.png"/>
+                        </DataTrigger>
+                    </ImageButton.Triggers>
+                </ImageButton>
+
+                <Label Text="{Binding NewsVM.SelectedEndpoint}" FontSize="7" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+
+            <VerticalStackLayout>
             <ImageButton Source="bookmark.png" 
                         Command="{Binding UiStateVM.ToggleSavedCommand}"
-                        Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="flag.png" 
+                        Style="{StaticResource FilterIconButtonStyle}"/>
+            <Label Text="{Binding SavedSearchVM.SelectedSavedSearch.Keyword}" FontSize="7" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+                <ImageButton Source="flag.png" 
                         Command="{Binding UiStateVM.ToggleLanguagesCommand}"
-                        Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="newsstand.png" 
+                        Style="{StaticResource FilterIconButtonStyle}"/>
+            <Label Text="{Binding LanguageVM.SelectedLanguage}" FontSize="7" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout>
+                <ImageButton Source="newsstand.png" 
                         Command="{Binding UiStateVM.ToggleSourcesCommand}"
-                        Style="{StaticResource IconButtonStyle}"/>
+                        Style="{StaticResource FilterIconButtonStyle}"/>
+            <Label Text="{Binding SourceVM.SelectedSource.Name}" FontSize="7" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
         </HorizontalStackLayout>
 
         <!-- Filter collections -->
         <ScrollView Grid.Row="2" MaximumHeightRequest="400">
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Spacing="3">
                 <!-- Språk -->
                 <CollectionView 
                 ItemsSource="{Binding LanguageVM.LanguageNames}"
@@ -110,7 +121,7 @@
                 IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}"
                 MaximumHeightRequest="200">
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="1"/>
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="x:String">
@@ -134,6 +145,7 @@
                 SelectedItem="{Binding SourceVM.SelectedSource, Mode=TwoWay}"
                 IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
                 MaximumHeightRequest="200">
+                    
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:SourceDto">
                             <Border Padding="10,8" 
@@ -228,8 +240,7 @@
                                            TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
                                     <Label Text="{Binding PublishedAt, StringFormat='{0:yyyy-MM-dd HH:mm}'}" 
                                            FontSize="12"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                                           HorizontalOptions="EndAndExpand"/>
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 

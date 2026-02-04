@@ -48,6 +48,7 @@ namespace NewNews.MAUI.ViewModels
             System.Diagnostics.Debug.WriteLine($"Toggled endpoint to: {SelectedEndpoint}");
         }
 
+        // Search news articles based on the current query and endpoint
         [RelayCommand]
         public async Task SearchNews()
         {
@@ -62,6 +63,8 @@ namespace NewNews.MAUI.ViewModels
 
             await LoadMoreNews();
         }
+
+        // Load more news articles with pagination
 
         [RelayCommand]
         public async Task LoadMoreNews()
@@ -145,6 +148,7 @@ namespace NewNews.MAUI.ViewModels
             }
         }
 
+        // Generate a unique cache key based on query parameters
         private string GenerateCacheKey(int page)
         {
             var query = SearchQuery ?? "default";
@@ -153,12 +157,14 @@ namespace NewNews.MAUI.ViewModels
             return $"{SelectedEndpoint}_{query}_{language}_{source}_{page}";
         }
 
+        // Open URL in external browser
         [RelayCommand]
         private async Task OpenInBrowser(string? url)
         {
             if (!string.IsNullOrWhiteSpace(url))
                 await _browser.OpenAsync(url);
         }
+
 
         [RelayCommand]
         private void ClearSearch()
@@ -178,6 +184,7 @@ namespace NewNews.MAUI.ViewModels
             _ = SearchNews();
         }
 
+        // Navigate to ArticleWebViewPage
         [RelayCommand]
         private async Task OpenArticle(string? url)
         {
@@ -189,6 +196,7 @@ namespace NewNews.MAUI.ViewModels
             );
         }
 
+        // Clear the entire cache
         public void ClearCache()
         {
             _cache.Clear();
