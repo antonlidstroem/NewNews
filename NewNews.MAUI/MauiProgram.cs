@@ -39,11 +39,12 @@ namespace NewNews.MAUI
             builder.Services.Configure<AppSettings>(builder.Configuration);
 
             // SQLite-databas
-            builder.Services.AddSingleton<SearchKeywordService>(sp =>
+            builder.Services.AddSingleton<ISearchKeywordService>(sp =>
             {
                 var dbPath = Path.Combine(FileSystem.AppDataDirectory, "searchkeywords.db3");
                 return new SearchKeywordService(dbPath);
             });
+
 
             // Registrera NewsApiClient med HttpClient
             builder.Services.AddHttpClient<INewsApiClient, NewsApiClient>(client =>
@@ -54,6 +55,7 @@ namespace NewNews.MAUI
             // Registrera Services
             builder.Services.AddSingleton<IBrowserService, BrowserService>();
             builder.Services.AddSingleton<INewsService, NewsService>();
+       
 
             // Registrera MainViewModel som singleton
             builder.Services.AddSingleton<MainViewModel>();

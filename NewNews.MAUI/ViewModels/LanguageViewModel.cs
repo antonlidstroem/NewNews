@@ -1,32 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using NewNews.DAL.Models;
 using NewNews.MAUI.ViewModels.Base;
-
 
 namespace NewNews.MAUI.ViewModels
 {
     public partial class LanguageViewModel : BaseViewModel
     {
         private readonly NewsQueryViewModel _query;
-        private readonly CategoryViewModel _category;
+
         public Dictionary<string, string> AvailableLanguages { get; } = new()
-    {
-        {"English", "en"},
-        {"Svenska", "sv"},
-        {"Deutsch", "de"},
-        {"Español", "es"},
-        {"Français", "fr"},
-        {"Italiano", "it"},
-        {"Nederlands", "nl"},
-        {"Norsk", "no"},
-        {"Português", "pt"},
-        {"Русский", "ru"},
-    };
+        {
+            {"English", "en"},
+            {"Svenska", "sv"},
+            {"Deutsch", "de"},
+            {"Español", "es"},
+            {"Français", "fr"},
+            {"Italiano", "it"},
+            {"Nederlands", "nl"},
+            {"Norsk", "no"},
+            {"Português", "pt"}
+        };
 
         public ObservableCollection<string> LanguageNames { get; } = new ObservableCollection<string>();
 
@@ -37,24 +30,28 @@ namespace NewNews.MAUI.ViewModels
         private bool isLanguageCollectionVisible;
 
         public string? CurrentLanguageCode =>
-        AvailableLanguages.TryGetValue(SelectedLanguage, out var code)
-            ? code
-            : null;
+            AvailableLanguages.TryGetValue(SelectedLanguage, out var code) && !string.IsNullOrEmpty(code)
+                ? code
+                : "sv"; // Default till svenska
 
-        public LanguageViewModel(NewsQueryViewModel query, CategoryViewModel category)
+        public LanguageViewModel(NewsQueryViewModel query)
         {
-            LanguageNames.Add("Allt");
+            // Lägg till alla språk
             foreach (var lang in AvailableLanguages.Keys)
                 LanguageNames.Add(lang);
+
             _query = query;
-            _category = category;
+
+            // Sätt default språk
+            _query.LanguageCode = "sv";
         }
 
         partial void OnSelectedLanguageChanged(string value)
         {
             IsLanguageCollectionVisible = false;
             _query.LanguageCode = CurrentLanguageCode;
-            _category.UpdateButtonVisibility(value);
+
+            System.Diagnostics.Debug.WriteLine($"Language changed to: {value} ({CurrentLanguageCode})");
         }
     }
 }

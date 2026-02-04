@@ -18,7 +18,8 @@ namespace NewNews.DAL.Services
 
         public async Task InitAsync()
         {
-            _db.CreateTableAsync<SavedSearch>().Wait();
+            //_db.CreateTableAsync<SavedSearch>().Wait();
+            await _db.CreateTableAsync<SavedSearch>();
         }
 
 

@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NewNews.DAL.Models;
 using NewNews.DAL.Services;
 using NewNews.MAUI.ViewModels.Base;
 
-
 namespace NewNews.MAUI.ViewModels
 {
     public partial class SavedSearchViewModel : BaseViewModel
     {
-        private readonly SearchKeywordService _keywordService;
+        private readonly ISearchKeywordService _keywordService;
         private readonly NewsViewModel _newsVM;
         private readonly LanguageViewModel _languageVM;
-        private readonly CategoryViewModel _categoryVM;
         private readonly NewsQueryViewModel _query;
 
         public ObservableCollection<SavedSearch> SavedKeywords { get; } = new();
@@ -24,38 +19,15 @@ namespace NewNews.MAUI.ViewModels
         [ObservableProperty] private SavedSearch? selectedSavedSearch;
         [ObservableProperty] public bool areSavedKeywordsVisible;
 
-        public SavedSearchViewModel(SearchKeywordService keywordService,
+        public SavedSearchViewModel(ISearchKeywordService keywordService,
                                     NewsViewModel newsVM,
                                     LanguageViewModel languageVM,
-                                    CategoryViewModel categoryVM,
                                     NewsQueryViewModel query)
         {
             _keywordService = keywordService;
             _newsVM = newsVM;
             _languageVM = languageVM;
-            _categoryVM = categoryVM;
             _query = query;
-        }
-
-        private string? MapLanguage(string lang) =>
-            lang switch
-            {
-                "svenska" => "sv",
-                "english" => "en",
-                _ => null
-            };
-
-        [RelayCommand]
-        private async Task SearchByKeyword(SavedSearch search)
-        {
-            if (search == null) return;
-
-            _query.SearchQuery = search.Keyword;
-            _query.LanguageCode = MapLanguage(search.Language);
-            _query.Category = search.Category;
-            _newsVM.SelectedCategory = _categoryVM.SelectedCategory;
-            await _newsVM.SearchNews();
-
         }
 
         [RelayCommand]
@@ -63,18 +35,12 @@ namespace NewNews.MAUI.ViewModels
         {
             if (string.IsNullOrWhiteSpace(_newsVM.SearchQuery)) return;
 
-            string? categoryToSave =
-            _categoryVM.SelectedCategory != "Allt"
-                ? _categoryVM.SelectedCategory
-                : null;
-
             await _keywordService.AddKeywordAsync(
                 _newsVM.SearchQuery,
                 _languageVM.SelectedLanguage,
-                categoryToSave);
+                null);
 
             await LoadSavedKeywords();
-
         }
 
         [RelayCommand]
@@ -90,23 +56,23 @@ namespace NewNews.MAUI.ViewModels
             if (value == null) return;
 
             AreSavedKeywordsVisible = false;
-
             _newsVM.SearchQuery = value.Keyword;
-            _languageVM.SelectedLanguage = value.Language;
-
-            _categoryVM.SelectedCategory =
-                string.IsNullOrWhiteSpace(value.Category) ? "Allt" : value.Category;
-
+            _languageVM.SelectedLanguage = value.Language ?? "Svenska";
             _ = _newsVM.SearchNews();
-
         }
 
         public async Task LoadSavedKeywords()
         {
-            SavedKeywords.Clear();
             var keywords = await _keywordService.GetAllKeywordsAsync();
-            foreach (var k in keywords)
-                SavedKeywords.Add(k);
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                SavedKeywords.Clear();
+
+                foreach (var k in keywords)
+                    SavedKeywords.Add(k);
+            });
         }
+
     }
 }

@@ -1,16 +1,18 @@
 ﻿using NewNews.DAL.Models;
 using NewNews.MAUI.Dto;
 
-public interface INewsService
+namespace NewNews.MAUI.Services
 {
-    Task<List<News>> GetNewsPageAsync(
-        int page,
-        int pageSize,
-        string query,
-        string? language,
-        string? category,
-        string? country,
-        string? sourceId);
+    public interface INewsService
+    {
+        Task<List<News>> GetNewsPageAsync(
+            int page,
+            int pageSize,
+            string query,
+            string? language,
+            string? sourceId,
+            string endpoint = "everything");
 
-    Task<List<SourceDto>> GetSourcesByCountryAsync(string country);
+        Task<List<SourceDto>> GetSourcesAsync();
+    }
 }
