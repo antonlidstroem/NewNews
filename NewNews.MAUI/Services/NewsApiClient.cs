@@ -12,7 +12,8 @@ namespace NewNews.MAUI.Services
         public NewsApiClient(HttpClient http, IConfiguration config)
         {
             _http = http;
-            // Läs API-nyckel från appsettings.json
+            _http.Timeout = TimeSpan.FromSeconds(30);
+
             _apiKey = config["NewsApi:ApiKey"] ?? throw new Exception("API key missing from configuration");
 
             if (!_http.DefaultRequestHeaders.Contains("User-Agent"))
@@ -22,43 +23,155 @@ namespace NewNews.MAUI.Services
         }
 
         public async Task<NewsApiResponseDto?> GetEverythingAsync(
-    string query, string? language, int page, int pageSize, string? sourceId = null, string? category = null)
+            string? query,
+            string? language,
+            int page,
+            int pageSize,
+            string? sourceId = null)
         {
-            var url = $"https://newsapi.org/v2/everything?q={Uri.EscapeDataString(query)}" +
-                $"&sortBy=publishedAt&page={page}" +
-                $"&pageSize={pageSize}" +
-                $"&apiKey={_apiKey}";
+            try
+            {
+                var searchQuery = string.IsNullOrWhiteSpace(query) ? "nyheter" : query;
 
-            if (!string.IsNullOrEmpty(language))
-                url += $"&language={language}";
+                var url = $"https://newsapi.org/v2/everything?q={Uri.EscapeDataString(searchQuery)}" +
+                    $"&sortBy=publishedAt" +
+                    $"&page={page}" +
+                    $"&pageSize={pageSize}" +
+                    $"&apiKey={_apiKey}";
 
-            if (!string.IsNullOrEmpty(sourceId))
-                url += $"&sources={sourceId}";
+                if (!string.IsNullOrEmpty(language))
+                    url += $"&language={language}";
 
-            // category stöds inte i everything-endpoint
+                if (!string.IsNullOrEmpty(sourceId))
+                    url += $"&sources={sourceId}";
 
-            return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+                System.Diagnostics.Debug.WriteLine($"API Call: {url.Replace(_apiKey, "***")}");
+
+                //var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+
+                var httpResponse = await _http.GetAsync(url);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return null;
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<NewsApiResponseDto>();
+
+
+                System.Diagnostics.Debug.WriteLine($"API Response: {response?.Articles?.Count ?? 0} articles");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetEverythingAsync: {ex.Message}");
+                return null;
+            }
         }
 
-
-        // Används vid filtration på category och country. Och när appen startar.
-        public async Task<NewsApiResponseDto?> GetTopHeadlinesByCountryAsync(
-            string country, string? query, int page, int pageSize)
+        public async Task<NewsApiResponseDto?> GetTopHeadlinesAsync(
+            string? query,
+            string? language,
+            int page,
+            int pageSize,
+            string? sourceId = null)
         {
-            var url = $"https://newsapi.org/v2/top-headlines?country={country}&page={page}&pageSize={pageSize}&apiKey={_apiKey}";
+            try
+            {
+                var url = $"https://newsapi.org/v2/top-headlines?" +
+                    $"page={page}" +
+                    $"&pageSize={pageSize}" +
+                    $"&apiKey={_apiKey}";
 
-            if (!string.IsNullOrEmpty(query))
-                url += $"&q={Uri.EscapeDataString(query)}";
+                // Top headlines kräver country ELLER sources (inte språk direkt)
+                if (!string.IsNullOrEmpty(sourceId))
+                {
+                    url += $"&sources={sourceId}";
+                }
+                else
+                {
+                    // Konvertera språkkod till landskod
+                    var country = LanguageToCountry(language);
+                    url += $"&country={country}";
+                }
 
-            return await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+                if (!string.IsNullOrEmpty(query))
+                    url += $"&q={Uri.EscapeDataString(query)}";
+
+                System.Diagnostics.Debug.WriteLine($"API Call: {url.Replace(_apiKey, "***")}");
+
+                //var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+
+                var httpResponse = await _http.GetAsync(url);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return null;
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<NewsApiResponseDto>();
+
+                System.Diagnostics.Debug.WriteLine($"API Response: {response?.Articles?.Count ?? 0} articles");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetTopHeadlinesAsync: {ex.Message}");
+                return null;
+            }
         }
 
-        // Hämtar källor baserat på land
-        public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
+        public async Task<List<SourceDto>> GetSourcesAsync()
         {
-            var url = $"https://newsapi.org/v2/sources?country={country}&apiKey={_apiKey}";
-            var response = await _http.GetFromJsonAsync<SourcesResponseDto>(url);
-            return response?.Sources ?? new List<SourceDto>();
+            try
+            {
+                var url = $"https://newsapi.org/v2/top-headlines/sources?apiKey={_apiKey}";
+                //var response = await _http.GetFromJsonAsync<SourcesResponseDto>(url);
+                var httpResponse = await _http.GetAsync(url);
+
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return new List<SourceDto>();
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<SourcesResponseDto>();
+
+
+                return response?.Sources ?? new List<SourceDto>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetSourcesAsync: {ex.Message}");
+                return new List<SourceDto>();
+            }
+        }
+
+        private string LanguageToCountry(string? language)
+        {
+            // Returnera landskod baserat på språkkod
+            return language?.ToLower() switch
+            {
+                "sv" => "se",
+                "en" => "us",
+                "de" => "de",
+                "es" => "es",
+                "fr" => "fr",
+                "it" => "it",
+                "nl" => "nl",
+                "no" => "no",
+                "pt" => "pt",
+                "ru" => "ru",
+                _ => "se" // Default till Sverige
+            };
         }
     }
 }
