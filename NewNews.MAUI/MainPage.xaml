@@ -108,7 +108,7 @@
                 SelectionMode="Single"
                 SelectedItem="{Binding LanguageVM.SelectedLanguage, Mode=TwoWay}"
                 IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}"
-                HeightRequest="50">
+                MaximumHeightRequest="200">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
                     </CollectionView.ItemsLayout>

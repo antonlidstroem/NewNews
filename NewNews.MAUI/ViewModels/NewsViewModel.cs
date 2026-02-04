@@ -66,6 +66,14 @@ namespace NewNews.MAUI.ViewModels
         [RelayCommand]
         public async Task LoadMoreNews()
         {
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                System.Diagnostics.Debug.WriteLine("No internet connection");
+                return;
+            }
+
+
             if (IsBusy || !hasMoreItems) return;
 
             try
@@ -83,9 +91,10 @@ namespace NewNews.MAUI.ViewModels
                 }
                 else
                 {
-                    var query = SelectedEndpoint == "top-headlines" && string.IsNullOrWhiteSpace(SearchQuery)
-                        ? null
-                        : SearchQuery ?? "nyheter";
+                    var query = SelectedEndpoint == "everything"
+                        ? (string.IsNullOrWhiteSpace(SearchQuery) ? "nyheter" : SearchQuery)
+                        : null;
+
 
                     System.Diagnostics.Debug.WriteLine($"API Call - Query: '{query}', Language: '{_query.LanguageCode}', Source: '{_query.SourceId}', Endpoint: '{SelectedEndpoint}'");
 

@@ -47,7 +47,20 @@ namespace NewNews.MAUI.Services
 
                 System.Diagnostics.Debug.WriteLine($"API Call: {url.Replace(_apiKey, "***")}");
 
-                var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+                //var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+
+                var httpResponse = await _http.GetAsync(url);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return null;
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<NewsApiResponseDto>();
+
+
                 System.Diagnostics.Debug.WriteLine($"API Response: {response?.Articles?.Count ?? 0} articles");
 
                 return response;
@@ -90,7 +103,19 @@ namespace NewNews.MAUI.Services
 
                 System.Diagnostics.Debug.WriteLine($"API Call: {url.Replace(_apiKey, "***")}");
 
-                var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+                //var response = await _http.GetFromJsonAsync<NewsApiResponseDto>(url);
+
+                var httpResponse = await _http.GetAsync(url);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return null;
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<NewsApiResponseDto>();
+
                 System.Diagnostics.Debug.WriteLine($"API Response: {response?.Articles?.Count ?? 0} articles");
 
                 return response;
@@ -107,7 +132,20 @@ namespace NewNews.MAUI.Services
             try
             {
                 var url = $"https://newsapi.org/v2/top-headlines/sources?apiKey={_apiKey}";
-                var response = await _http.GetFromJsonAsync<SourcesResponseDto>(url);
+                //var response = await _http.GetFromJsonAsync<SourcesResponseDto>(url);
+                var httpResponse = await _http.GetAsync(url);
+
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    var error = await httpResponse.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"HTTP ERROR: {error}");
+                    return new List<SourceDto>();
+                }
+
+                var response = await httpResponse.Content.ReadFromJsonAsync<SourcesResponseDto>();
+
+
                 return response?.Sources ?? new List<SourceDto>();
             }
             catch (Exception ex)
