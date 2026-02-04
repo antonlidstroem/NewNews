@@ -71,17 +71,17 @@
                 IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}"
                 HeightRequest="50">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="x:String">
-                        <Border Padding="12,6" 
+                        <Border Padding="12,8" 
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 8">
                             <Label Text="{Binding .}" 
                                    VerticalOptions="Center" 
-                                   FontSize="12"/>
+                                   FontSize="14"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -96,12 +96,14 @@
                 MaximumHeightRequest="200">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:SourceDto">
-                        <Border Padding="10" 
-                                Margin="2"
+                        <Border Padding="10,8" 
+                                Margin="0,2"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 8">
-                            <Label Text="{Binding Name}" FontSize="12"/>
+                            <Label Text="{Binding Name}" 
+                                   FontSize="14"
+                                   VerticalOptions="Center"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -119,18 +121,20 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems Mode="Execute">
-                                    <SwipeItem Text="Ta bort"
+                                    <SwipeItem Text="🗑️"
                                               BackgroundColor="Red"
                                               Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                               CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Padding="10" 
-                                    Margin="2"
+                            <Border Padding="10,8" 
+                                    Margin="0,2"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8">
-                                <Label Text="{Binding Keyword}" FontSize="12"/>
+                                <Label Text="{Binding Keyword}" 
+                                       FontSize="14"
+                                       VerticalOptions="Center"/>
                             </Border>
                         </SwipeView>
                     </DataTemplate>
