@@ -13,9 +13,7 @@ namespace NewNews.MAUI.ViewModels
         private readonly IBrowserService _browser;
         private readonly NewsQueryViewModel _query;
 
-        // Cache för att undvika onödiga API-anrop
         private readonly Dictionary<string, List<News>> _cache = new();
-        private string _lastCacheKey = string.Empty;
 
         public ObservableCollection<ArticleViewModel> Articles { get; } = new();
 
@@ -27,12 +25,6 @@ namespace NewNews.MAUI.ViewModels
         private int currentPage = 1;
         private const int pageSize = 20;
 
-        public ObservableCollection<string> Endpoints { get; } = new()
-        {
-            "everything",
-            "top-headlines"
-        };
-
         public NewsViewModel(
             INewsService newsService,
             IBrowserService browser,
@@ -43,10 +35,17 @@ namespace NewNews.MAUI.ViewModels
             _query = query;
         }
 
-        // Initialisera med initial sökning
         public async Task InitializeAsync()
         {
+            System.Diagnostics.Debug.WriteLine("=== Initializing NewsViewModel ===");
             await SearchNews();
+        }
+
+        [RelayCommand]
+        public void ToggleEndpoint()
+        {
+            SelectedEndpoint = SelectedEndpoint == "everything" ? "top-headlines" : "everything";
+            System.Diagnostics.Debug.WriteLine($"Toggled endpoint to: {SelectedEndpoint}");
         }
 
         [RelayCommand]
@@ -54,12 +53,12 @@ namespace NewNews.MAUI.ViewModels
         {
             if (IsBusy) return;
 
+            System.Diagnostics.Debug.WriteLine($"=== Starting search with endpoint: {SelectedEndpoint} ===");
+
             Articles.Clear();
             currentPage = 1;
             hasMoreItems = true;
-
-            // Rensa cache för denna sökning
-            _lastCacheKey = string.Empty;
+            _cache.Clear();
 
             await LoadMoreNews();
         }
@@ -72,24 +71,23 @@ namespace NewNews.MAUI.ViewModels
             try
             {
                 IsBusy = true;
+                System.Diagnostics.Debug.WriteLine($"Loading page {currentPage}...");
 
-                // Skapa cache key baserat på sökparametrar
                 var cacheKey = GenerateCacheKey(currentPage);
-
                 List<News> news;
 
-                // Kolla om vi har data i cache
                 if (_cache.TryGetValue(cacheKey, out var cachedNews))
                 {
                     news = cachedNews;
-                    System.Diagnostics.Debug.WriteLine($"Using cached data for page {currentPage}");
+                    System.Diagnostics.Debug.WriteLine($"Using cached data: {news.Count} articles");
                 }
                 else
                 {
-                    // Använd tom sträng för top-headlines om SearchQuery är null/tom
                     var query = SelectedEndpoint == "top-headlines" && string.IsNullOrWhiteSpace(SearchQuery)
-                        ? null  // Skicka null för att få alla top headlines
+                        ? null
                         : SearchQuery ?? "nyheter";
+
+                    System.Diagnostics.Debug.WriteLine($"API Call - Query: '{query}', Language: '{_query.LanguageCode}', Source: '{_query.SourceId}', Endpoint: '{SelectedEndpoint}'");
 
                     news = await _newsService.GetNewsPageAsync(
                         currentPage,
@@ -99,22 +97,17 @@ namespace NewNews.MAUI.ViewModels
                         _query.SourceId,
                         SelectedEndpoint);
 
-                    // Spara i cache
                     if (news != null && news.Count > 0)
                     {
                         _cache[cacheKey] = news;
-                        System.Diagnostics.Debug.WriteLine($"Cached {news.Count} articles for page {currentPage}");
+                        System.Diagnostics.Debug.WriteLine($"Cached {news.Count} articles");
                     }
                 }
 
                 if (news == null || news.Count == 0)
                 {
                     hasMoreItems = false;
-
-                    if (Articles.Count == 0)
-                    {
-                        System.Diagnostics.Debug.WriteLine("No articles found");
-                    }
+                    System.Diagnostics.Debug.WriteLine("No more articles available");
                 }
                 else
                 {
@@ -124,18 +117,17 @@ namespace NewNews.MAUI.ViewModels
                             Articles.Add(new ArticleViewModel(item));
                     });
 
+                    System.Diagnostics.Debug.WriteLine($"Added {news.Count} articles. Total: {Articles.Count}");
                     currentPage++;
 
-                    // Om vi fick färre artiklar än pageSize, finns troligen inga fler
                     if (news.Count < pageSize)
-                    {
                         hasMoreItems = false;
-                    }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading news: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"ERROR in LoadMoreNews: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 hasMoreItems = false;
             }
             finally
@@ -173,10 +165,7 @@ namespace NewNews.MAUI.ViewModels
         partial void OnSelectedEndpointChanged(string value)
         {
             _query.Endpoint = value;
-
-            // Rensa cache när endpoint ändras
             _cache.Clear();
-
             _ = SearchNews();
         }
 
@@ -191,7 +180,6 @@ namespace NewNews.MAUI.ViewModels
             );
         }
 
-        // Rensa cache när filter ändras
         public void ClearCache()
         {
             _cache.Clear();

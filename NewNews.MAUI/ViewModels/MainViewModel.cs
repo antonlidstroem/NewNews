@@ -34,6 +34,9 @@ namespace NewNews.MAUI.ViewModels
             {
                 if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
                 {
+                    // Filtrera källor baserat på nytt språk
+                    SourceVM.FilterSourcesByLanguage(LanguageVM.CurrentLanguageCode);
+
                     NewsVM.ClearCache();
                     await NewsVM.SearchNews();
                 }
@@ -50,7 +53,6 @@ namespace NewNews.MAUI.ViewModels
             };
         }
 
-        // Anropas när MainPage visas
         public async Task InitializeAsync()
         {
             await NewsVM.InitializeAsync();

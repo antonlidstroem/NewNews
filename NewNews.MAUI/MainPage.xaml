@@ -12,41 +12,79 @@
 
         <!-- Sökfält -->
         <Border Grid.Row="0" 
-                Padding="10,5" 
+                Padding="12,8" 
                 Margin="0,5"
-                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource DarkGray}}"
                 StrokeThickness="0"
-                StrokeShape="RoundRectangle 12">
-            <HorizontalStackLayout Spacing="10">
-                <Entry Placeholder="Sök nyheter..." 
+                StrokeShape="RoundRectangle 16">
+
+            <Border.Shadow>
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Black}}" 
+                        Offset="0,2" 
+                        Radius="8" 
+                        Opacity="0.1"/>
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+                <Entry Grid.Column="0"
+                    Placeholder="Sök nyheter..." 
                        Text="{Binding NewsVM.SearchQuery}" 
-                       HorizontalOptions="FillAndExpand"
                        BackgroundColor="Transparent"
-                       ReturnCommand="{Binding NewsVM.SearchNewsCommand}"/>
-                <ImageButton Source="search.png" 
+                       TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource PrimaryDark}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                       ReturnCommand="{Binding NewsVM.SearchNewsCommand}"
+                       VerticalOptions="Center"/>
+
+                <!-- Endpoint Toggle -->
+                <ImageButton Grid.Column="1"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         Padding="8"
+                         CornerRadius="8"
+                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray800}}"
+                         Command="{Binding NewsVM.ToggleEndpointCommand}">
+                    <ImageButton.Triggers>
+                        <DataTrigger TargetType="ImageButton"
+                     Binding="{Binding NewsVM.SelectedEndpoint}"
+                     Value="everything">
+                            <Setter Property="Source" Value="everything.png"/>
+                        </DataTrigger>
+
+                        <DataTrigger TargetType="ImageButton"
+                     Binding="{Binding NewsVM.SelectedEndpoint}"
+                     Value="top-headlines">
+                            <Setter Property="Source" Value="headline.png"/>
+                        </DataTrigger>
+                    </ImageButton.Triggers>
+                </ImageButton>
+
+                <ImageButton Grid.Column="2"
+                            Source="search.png" 
                             Command="{Binding NewsVM.SearchNewsCommand}"
                             Style="{StaticResource IconButtonStyle}"
-                            WidthRequest="36"
-                            HeightRequest="36"/>
-                <ImageButton Source="delete.png" 
+                            WidthRequest="40"
+                            HeightRequest="40"/>
+                <ImageButton Grid.Column="3"
+                            Source="delete.png" 
                             Command="{Binding NewsVM.ClearSearchCommand}"
                             Style="{StaticResource IconButtonStyle}"
-                            WidthRequest="36"
-                            HeightRequest="36"/>
-            </HorizontalStackLayout>
+                            WidthRequest="40"
+                            HeightRequest="40"/>
+            </Grid>
         </Border>
 
         <!-- Endpoint väljare (Everything / Top Headlines) -->
-        <HorizontalStackLayout Grid.Row="1" Padding="5" Spacing="10" HorizontalOptions="Center">
+        <!--
+        <HorizontalStackLayout Grid.Row="1" Padding="5" Spacing="8" HorizontalOptions="Center">
             <Label Text="Källa:" VerticalOptions="Center" FontSize="12"/>
             <Picker ItemsSource="{Binding NewsVM.Endpoints}"
                     SelectedItem="{Binding NewsVM.SelectedEndpoint}"
                     WidthRequest="150"
                     FontSize="12"/>
-        </HorizontalStackLayout>
+        </HorizontalStackLayout>-->
 
         <!-- Filterknappar -->
-        <HorizontalStackLayout Grid.Row="2" Padding="5" Spacing="10" HorizontalOptions="Center">
+        <HorizontalStackLayout Grid.Row="1" Padding="5" Spacing="8" HorizontalOptions="Center">
             <ImageButton Source="star.png" 
                         Command="{Binding SavedSearchVM.SaveSearchCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
@@ -56,92 +94,94 @@
             <ImageButton Source="flag.png" 
                         Command="{Binding UiStateVM.ToggleLanguagesCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="newsmode.png" 
+            <ImageButton Source="newsstand.png" 
                         Command="{Binding UiStateVM.ToggleSourcesCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
         </HorizontalStackLayout>
 
         <!-- Filter collections -->
-        <VerticalStackLayout Grid.Row="3" Spacing="5">
-            <!-- Språk -->
-            <CollectionView 
+        <ScrollView Grid.Row="2" MaximumHeightRequest="400">
+            <VerticalStackLayout Spacing="5">
+                <!-- Språk -->
+                <CollectionView 
                 ItemsSource="{Binding LanguageVM.LanguageNames}"
                 SelectionMode="Single"
                 SelectedItem="{Binding LanguageVM.SelectedLanguage, Mode=TwoWay}"
                 IsVisible="{Binding LanguageVM.IsLanguageCollectionVisible}"
                 HeightRequest="50">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="x:String">
-                        <Border Padding="12,8" 
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border Padding="16,12" 
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                 StrokeThickness="0"
-                                StrokeShape="RoundRectangle 8">
-                            <Label Text="{Binding .}" 
+                                StrokeShape="RoundRectangle 12">
+                                <Label Text="{Binding .}" 
                                    VerticalOptions="Center" 
-                                   FontSize="14"/>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                   FontSize="14"
+                                   FontAttributes="Bold"/>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-            <!-- Källor -->
-            <CollectionView 
+                <!-- Källor -->
+                <CollectionView 
                 ItemsSource="{Binding SourceVM.Sources}"
                 SelectionMode="Single"
                 SelectedItem="{Binding SourceVM.SelectedSource, Mode=TwoWay}"
                 IsVisible="{Binding SourceVM.IsSourceCollectionVisible}"
                 MaximumHeightRequest="200">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="dto:SourceDto">
-                        <Border Padding="10,8" 
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:SourceDto">
+                            <Border Padding="10,8" 
                                 Margin="0,2"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 8">
-                            <Label Text="{Binding Name}" 
+                                <Label Text="{Binding Name}" 
                                    FontSize="14"
                                    VerticalOptions="Center"/>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-            <!-- Sparade sökningar -->
-            <CollectionView 
+                <!-- Sparade sökningar -->
+                <CollectionView 
                 ItemsSource="{Binding SavedSearchVM.SavedKeywords}"
                 SelectionMode="Single"
                 SelectedItem="{Binding SavedSearchVM.SelectedSavedSearch, Mode=TwoWay}"
                 IsVisible="{Binding SavedSearchVM.AreSavedKeywordsVisible}"
                 MaximumHeightRequest="200">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:SavedSearch">
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems Mode="Execute">
-                                    <SwipeItem Text="🗑️"
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SavedSearch">
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Execute">
+                                        <SwipeItem Text="🗑️"
                                               BackgroundColor="Red"
                                               Command="{Binding BindingContext.SavedSearchVM.DeleteSavedSearchCommand, Source={x:Reference RootPage}}"
                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Padding="10,8" 
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Border Padding="10,8" 
                                     Margin="0,2"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8">
-                                <Label Text="{Binding Keyword}" 
+                                    <Label Text="{Binding Keyword}" 
                                        FontSize="14"
                                        VerticalOptions="Center"/>
-                            </Border>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-
+                                </Border>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
         <!-- Artikellista med infinite scroll -->
         <RefreshView Grid.Row="4" 
                      Command="{Binding NewsVM.SearchNewsCommand}"

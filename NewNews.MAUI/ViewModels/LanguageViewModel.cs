@@ -14,7 +14,11 @@ namespace NewNews.MAUI.ViewModels
             {"Svenska", "sv"},
             {"Deutsch", "de"},
             {"Español", "es"},
-            {"Français", "fr"}
+            {"Français", "fr"},
+            {"Italiano", "it"},
+            {"Nederlands", "nl"},
+            {"Norsk", "no"},
+            {"Português", "pt"}
         };
 
         public ObservableCollection<string> LanguageNames { get; } = new ObservableCollection<string>();
@@ -28,10 +32,11 @@ namespace NewNews.MAUI.ViewModels
         public string? CurrentLanguageCode =>
             AvailableLanguages.TryGetValue(SelectedLanguage, out var code) && !string.IsNullOrEmpty(code)
                 ? code
-                : null;
+                : "sv"; // Default till svenska
 
         public LanguageViewModel(NewsQueryViewModel query)
         {
+            // Lägg till alla språk
             foreach (var lang in AvailableLanguages.Keys)
                 LanguageNames.Add(lang);
 
@@ -45,6 +50,8 @@ namespace NewNews.MAUI.ViewModels
         {
             IsLanguageCollectionVisible = false;
             _query.LanguageCode = CurrentLanguageCode;
+
+            System.Diagnostics.Debug.WriteLine($"Language changed to: {value} ({CurrentLanguageCode})");
         }
     }
 }
