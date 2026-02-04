@@ -1,6 +1,5 @@
 ﻿using NewNews.DAL.Services;
 using NewNews.MAUI.Services;
-using NewNews.MAUI.ViewModels;
 using NewNews.MAUI.ViewModels.Base;
 
 namespace NewNews.MAUI.ViewModels
@@ -11,8 +10,6 @@ namespace NewNews.MAUI.ViewModels
         private readonly SearchKeywordService _keywordService;
 
         public LanguageViewModel LanguageVM { get; }
-        public CategoryViewModel CategoryVM { get; }
-        public CountryViewModel CountryVM { get; }
         public SourceViewModel SourceVM { get; }
         public NewsViewModel NewsVM { get; }
         public SavedSearchViewModel SavedSearchVM { get; }
@@ -24,58 +21,25 @@ namespace NewNews.MAUI.ViewModels
         {
             _keywordService = keywordService;
 
-            // Skapa ViewModels i rätt ordning
-            CategoryVM = new CategoryViewModel(_query);
-            LanguageVM = new LanguageViewModel(_query, CategoryVM);
-            CountryVM = new CountryViewModel(_query);
+            LanguageVM = new LanguageViewModel(_query);
             SourceVM = new SourceViewModel(newsService, _query);
             NewsVM = new NewsViewModel(newsService, browserService, _query);
-            SavedSearchVM = new SavedSearchViewModel(_keywordService, NewsVM, LanguageVM, CategoryVM, _query);
-            UiStateVM = new UiStateViewModel(LanguageVM, CountryVM, CategoryVM, SourceVM, SavedSearchVM);
+            SavedSearchVM = new SavedSearchViewModel(_keywordService, NewsVM, LanguageVM, _query);
+            UiStateVM = new UiStateViewModel(LanguageVM, SourceVM, SavedSearchVM);
 
-            // Ladda sparade sökningar
             _ = SavedSearchVM.LoadSavedKeywords();
 
-            // Uppdatera kategoriknappens synlighet baserat på valt språk
-            CategoryVM.UpdateButtonVisibility(LanguageVM.SelectedLanguage);
-
-            // Lyssna på språkändringar
             LanguageVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
-                {
-                    await OnLanguageChangedAsync();
-                }
+                    await NewsVM.SearchNews();
             };
 
-            // Lyssna på kategoriändringar
-            CategoryVM.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(CategoryVM.SelectedCategory))
-                    await OnCategoryChangedAsync();
-            };
-
-            // Lyssna på land-ändringar och uppdatera källor
-            CountryVM.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(CountryVM.SelectedCountry))
-                {
-                    await SourceVM.LoadSourcesAsync(CountryVM.SelectedCountry?.Code);
-                    await OnCountryChangedAsync();
-                }
-            };
-
-            // Lyssna på källändringar och sök om
             SourceVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(SourceVM.SelectedSource))
-                    await OnSourceChangedAsync();
+                    await NewsVM.SearchNews();
             };
         }
-
-        private Task OnLanguageChangedAsync() => NewsVM.SearchNews();
-        private Task OnCategoryChangedAsync() => NewsVM.SearchNews();
-        private Task OnCountryChangedAsync() => NewsVM.SearchNews();
-        private Task OnSourceChangedAsync() => NewsVM.SearchNews();
     }
 }

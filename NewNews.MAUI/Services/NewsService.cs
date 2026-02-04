@@ -2,75 +2,91 @@
 using NewNews.MAUI.Dto;
 using NewNews.MAUI.Services;
 
-public class NewsService : INewsService
+namespace NewNews.MAUI.Services
 {
-    private readonly INewsApiClient _client;
-
-    public NewsService(INewsApiClient client)
+    public class NewsService : INewsService
     {
-        _client = client;
-    }
+        private readonly INewsApiClient _client;
 
-    public async Task<List<News>> GetNewsPageAsync(
-        int page,
-        int pageSize,
-        string query,
-        string? language,
-        string? category,
-        string? country,
-        string? sourceId)
-    {
-        List<ArticleDto> articles = new();
-
-        if (!string.IsNullOrEmpty(country))
+        public NewsService(INewsApiClient client)
         {
-            // HÄMTAR FRÅN TOPHEADLINES
-            var topResponse = await _client.GetTopHeadlinesByCountryAsync(
-                country,
-                query,
-                page,
-                pageSize);
-            if (topResponse?.Articles != null)
-                articles = topResponse.Articles;
-        }
-        else
-        {
-            // HÄMTAR FRÅN EVERYTHING (PRIMÄR)
-            var everythingResponse = await _client.GetEverythingAsync(
-                query,
-                language,
-                page,
-                pageSize,
-                sourceId: sourceId,
-                category: null);
-            if (everythingResponse?.Articles != null)
-                articles = everythingResponse.Articles;
+            _client = client;
         }
 
-        // Manuella filter
-        if (!string.IsNullOrEmpty(category))
+        public async Task<List<News>> GetNewsPageAsync(
+            int page,
+            int pageSize,
+            string query,
+            string? language,
+            string? sourceId,
+            string endpoint = "everything")
         {
-            articles = articles
-                .Where(a => a.Category?.Equals(category, StringComparison.OrdinalIgnoreCase) == true)
-                .ToList();
+            try
+            {
+                List<ArticleDto> articles = new();
+
+                if (endpoint == "top-headlines")
+                {
+                    // Hämta top headlines (kräver country code)
+                    var topResponse = await _client.GetTopHeadlinesAsync(
+                        query,
+                        language,
+                        page,
+                        pageSize,
+                        sourceId);
+
+                    if (topResponse?.Articles != null)
+                        articles = topResponse.Articles;
+                }
+                else
+                {
+                    // Hämta everything (default)
+                    var everythingResponse = await _client.GetEverythingAsync(
+                        query,
+                        language,
+                        page,
+                        pageSize,
+                        sourceId);
+
+                    if (everythingResponse?.Articles != null)
+                        articles = everythingResponse.Articles;
+                }
+
+                // Konvertera till News-objekt
+                var result = articles
+                    .Where(a => !string.IsNullOrEmpty(a.Title)) // Filtrera bort tomma artiklar
+                    .Select(a => new News
+                    {
+                        Title = a.Title,
+                        Description = a.Description,
+                        Url = a.Url,
+                        ImageUrl = a.UrlToImage,
+                        Source = a.Source?.Name,
+                        Content = a.Content,
+                        PublishedAt = a.PublishedAt
+                    })
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetNewsPageAsync: {ex.Message}");
+                return new List<News>();
+            }
         }
 
-        var result = articles.Select(a => new News
+        public async Task<List<SourceDto>> GetSourcesAsync()
         {
-            Title = a.Title,
-            Description = a.Description,
-            Url = a.Url,
-            ImageUrl = a.UrlToImage,
-            Source = a.Source?.Name,
-            Content = a.Content,
-            PublishedAt = a.PublishedAt
-        }).ToList();
-
-        return result;
-    }
-
-    public async Task<List<SourceDto>> GetSourcesByCountryAsync(string country)
-    {
-        return await _client.GetSourcesByCountryAsync(country);
+            try
+            {
+                return await _client.GetSourcesAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetSourcesAsync: {ex.Message}");
+                return new List<SourceDto>();
+            }
+        }
     }
 }

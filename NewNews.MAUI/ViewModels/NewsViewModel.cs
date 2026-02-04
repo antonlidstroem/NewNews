@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NewNews.DAL.Models;
-using NewNews.MAUI.Dto;
 using NewNews.MAUI.Services;
 using NewNews.MAUI.ViewModels.Base;
 
@@ -20,89 +15,81 @@ namespace NewNews.MAUI.ViewModels
         public ObservableCollection<ArticleViewModel> Articles { get; } = new();
 
         [ObservableProperty] private string? searchQuery;
-        [ObservableProperty] private string selectedCategory = "Allt";
-        [ObservableProperty] private SourceDto? selectedSource;
         [ObservableProperty] private bool isBusy;
-        //[ObservableProperty] private string? languageCode;
-        //[ObservableProperty] private CountryDto? selectedCountry;
-
+        [ObservableProperty] private string selectedEndpoint = "everything";
 
         private bool hasMoreItems = true;
         private int currentPage = 1;
-        private const int pageSize = 50;
+        private const int pageSize = 20;
+
+        public ObservableCollection<string> Endpoints { get; } = new()
+        {
+            "everything",
+            "top-headlines"
+        };
 
         public NewsViewModel(
-            INewsService newsService, 
+            INewsService newsService,
             IBrowserService browser,
             NewsQueryViewModel query)
         {
             _newsService = newsService;
             _browser = browser;
             _query = query;
-
-            //_query.PropertyChanged += async (_, __) =>
-            //{
-            //    await SearchNews();
-            //};
         }
 
         [RelayCommand]
         public async Task SearchNews()
         {
+            if (IsBusy) return;
+
             Articles.Clear();
             currentPage = 1;
             hasMoreItems = true;
-
-            //await LoadMoreNews(SearchQuery ?? "nyheter");
             await LoadMoreNews();
-
         }
-
 
         [RelayCommand]
         public async Task LoadMoreNews()
-            //public async Task LoadMoreNews(string? query = "nyheter")
         {
             if (IsBusy || !hasMoreItems) return;
-            IsBusy = true;
 
-            //string? categoryFilter = SelectedCategory != "Allt" ? SelectedCategory.ToLower() : null;
-            //string? sourceId = SelectedSource?.Id;
-
-            var news = await _newsService.GetNewsPageAsync(
-                currentPage,
-                pageSize,
-                _query.SearchQuery ?? "nyheter",
-                _query.LanguageCode,
-                _query.Category,
-                _query.CountryCode,
-                _query.SourceId);
-
-
-            MainThread.BeginInvokeOnMainThread(() =>
+            try
             {
-                foreach (var item in news)
-                    Articles.Add(new ArticleViewModel(item));
-            });
+                IsBusy = true;
 
-            if (news.Count == 0)
+                var news = await _newsService.GetNewsPageAsync(
+                    currentPage,
+                    pageSize,
+                    _query.SearchQuery ?? "nyheter",
+                    _query.LanguageCode,
+                    _query.SourceId,
+                    SelectedEndpoint);
+
+                if (news == null || news.Count == 0)
+                {
+                    hasMoreItems = false;
+                }
+                else
+                {
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        foreach (var item in news)
+                            Articles.Add(new ArticleViewModel(item));
+                    });
+                    currentPage++;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading news: {ex.Message}");
                 hasMoreItems = false;
-            else
-                currentPage++;
-
-            IsBusy = false;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
-
-
-        //[RelayCommand]
-        //private async Task SourceTapped(string? url)
-        //{
-        //    if (string.IsNullOrWhiteSpace(url))
-        //        return;
-
-        //    await Shell.Current.GoToAsync($"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}");
-        //}
-
 
         [RelayCommand]
         private async Task OpenInBrowser(string? url)
@@ -110,14 +97,6 @@ namespace NewNews.MAUI.ViewModels
             if (!string.IsNullOrWhiteSpace(url))
                 await _browser.OpenAsync(url);
         }
-
-        private double webViewHeight;
-        public double WebViewHeight
-        {
-            get => webViewHeight;
-            set => SetProperty(ref webViewHeight, value);
-        }
-
 
         [RelayCommand]
         private void ClearSearch()
@@ -130,6 +109,12 @@ namespace NewNews.MAUI.ViewModels
             _query.SearchQuery = value;
         }
 
+        partial void OnSelectedEndpointChanged(string value)
+        {
+            _query.Endpoint = value;
+            _ = SearchNews(); // Sök om när endpoint ändras
+        }
+
         [RelayCommand]
         private async Task OpenArticle(string? url)
         {
@@ -140,12 +125,5 @@ namespace NewNews.MAUI.ViewModels
                 $"{nameof(ArticleWebViewPage)}?url={Uri.EscapeDataString(url)}"
             );
         }
-
-
-
-
     }
 }
-
-
-
