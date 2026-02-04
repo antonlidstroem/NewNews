@@ -16,7 +16,7 @@ namespace NewNews.MAUI.Services
         public async Task<List<News>> GetNewsPageAsync(
             int page,
             int pageSize,
-            string query,
+            string? query,
             string? language,
             string? sourceId,
             string endpoint = "everything")
@@ -27,7 +27,7 @@ namespace NewNews.MAUI.Services
 
                 if (endpoint == "top-headlines")
                 {
-                    // Hämta top headlines (kräver country code)
+                    // Top headlines kan ha null query
                     var topResponse = await _client.GetTopHeadlinesAsync(
                         query,
                         language,
@@ -40,9 +40,11 @@ namespace NewNews.MAUI.Services
                 }
                 else
                 {
-                    // Hämta everything (default)
+                    // Everything kräver query, så skicka "nyheter" om null
+                    var searchQuery = string.IsNullOrWhiteSpace(query) ? "nyheter" : query;
+
                     var everythingResponse = await _client.GetEverythingAsync(
-                        query,
+                        searchQuery,
                         language,
                         page,
                         pageSize,
@@ -54,7 +56,7 @@ namespace NewNews.MAUI.Services
 
                 // Konvertera till News-objekt
                 var result = articles
-                    .Where(a => !string.IsNullOrEmpty(a.Title)) // Filtrera bort tomma artiklar
+                    .Where(a => !string.IsNullOrEmpty(a.Title))
                     .Select(a => new News
                     {
                         Title = a.Title,
@@ -67,6 +69,7 @@ namespace NewNews.MAUI.Services
                     })
                     .ToList();
 
+                System.Diagnostics.Debug.WriteLine($"Loaded {result.Count} articles for page {page}");
                 return result;
             }
             catch (Exception ex)

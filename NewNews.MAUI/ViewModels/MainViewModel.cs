@@ -29,17 +29,31 @@ namespace NewNews.MAUI.ViewModels
 
             _ = SavedSearchVM.LoadSavedKeywords();
 
+            // Lyssna på språkändringar
             LanguageVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
+                {
+                    NewsVM.ClearCache();
                     await NewsVM.SearchNews();
+                }
             };
 
+            // Lyssna på källändringar
             SourceVM.PropertyChanged += async (s, e) =>
             {
                 if (e.PropertyName == nameof(SourceVM.SelectedSource))
+                {
+                    NewsVM.ClearCache();
                     await NewsVM.SearchNews();
+                }
             };
+        }
+
+        // Anropas när MainPage visas
+        public async Task InitializeAsync()
+        {
+            await NewsVM.InitializeAsync();
         }
     }
 }

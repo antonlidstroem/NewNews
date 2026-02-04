@@ -23,12 +23,12 @@
                        HorizontalOptions="FillAndExpand"
                        BackgroundColor="Transparent"
                        ReturnCommand="{Binding NewsVM.SearchNewsCommand}"/>
-                <ImageButton Source="search.svg" 
+                <ImageButton Source="search.png" 
                             Command="{Binding NewsVM.SearchNewsCommand}"
                             Style="{StaticResource IconButtonStyle}"
                             WidthRequest="36"
                             HeightRequest="36"/>
-                <ImageButton Source="delete.svg" 
+                <ImageButton Source="delete.png" 
                             Command="{Binding NewsVM.ClearSearchCommand}"
                             Style="{StaticResource IconButtonStyle}"
                             WidthRequest="36"
@@ -47,16 +47,16 @@
 
         <!-- Filterknappar -->
         <HorizontalStackLayout Grid.Row="2" Padding="5" Spacing="10" HorizontalOptions="Center">
-            <ImageButton Source="bookmark.svg" 
+            <ImageButton Source="star.png" 
                         Command="{Binding SavedSearchVM.SaveSearchCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="star.svg" 
+            <ImageButton Source="bookmark.png" 
                         Command="{Binding UiStateVM.ToggleSavedCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="language.svg" 
+            <ImageButton Source="flag.png" 
                         Command="{Binding UiStateVM.ToggleLanguagesCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
-            <ImageButton Source="home.svg" 
+            <ImageButton Source="newsmode.png" 
                         Command="{Binding UiStateVM.ToggleSourcesCommand}"
                         Style="{StaticResource IconButtonStyle}"/>
         </HorizontalStackLayout>

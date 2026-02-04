@@ -10,7 +10,6 @@ namespace NewNews.MAUI.ViewModels
 
         public Dictionary<string, string> AvailableLanguages { get; } = new()
         {
-            {"Allt", ""},
             {"English", "en"},
             {"Svenska", "sv"},
             {"Deutsch", "de"},
@@ -37,6 +36,9 @@ namespace NewNews.MAUI.ViewModels
                 LanguageNames.Add(lang);
 
             _query = query;
+
+            // Sätt default språk
+            _query.LanguageCode = "sv";
         }
 
         partial void OnSelectedLanguageChanged(string value)
