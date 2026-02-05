@@ -66,7 +66,7 @@
             <!-- Endpoint Toggle -->
             <VerticalStackLayout>
                 <ImageButton Grid.Column="1"
-                     Style="{StaticResource FilterIconButtonStyle}"
+                     Style="{StaticResource IconButtonStyle}"
                      Command="{Binding NewsVM.ToggleEndpointCommand}">
                     <ImageButton.Triggers>
                         <DataTrigger TargetType="ImageButton"
@@ -90,21 +90,21 @@
             <VerticalStackLayout>
             <ImageButton Source="bookmark.png" 
                         Command="{Binding UiStateVM.ToggleSavedCommand}"
-                        Style="{StaticResource FilterIconButtonStyle}"/>
+                        Style="{StaticResource IconButtonStyle}"/>
             <Label Text="{Binding SavedSearchVM.SelectedSavedSearch.Keyword}" FontSize="7" HorizontalTextAlignment="Center"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout>
                 <ImageButton Source="flag.png" 
                         Command="{Binding UiStateVM.ToggleLanguagesCommand}"
-                        Style="{StaticResource FilterIconButtonStyle}"/>
+                        Style="{StaticResource IconButtonStyle}"/>
             <Label Text="{Binding LanguageVM.SelectedLanguage}" FontSize="7" HorizontalTextAlignment="Center"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout>
                 <ImageButton Source="newsstand.png" 
                         Command="{Binding UiStateVM.ToggleSourcesCommand}"
-                        Style="{StaticResource FilterIconButtonStyle}"/>
+                        Style="{StaticResource IconButtonStyle}"/>
             <Label Text="{Binding SourceVM.SelectedSource.Name}" FontSize="7" HorizontalTextAlignment="Center"/>
             </VerticalStackLayout>
 

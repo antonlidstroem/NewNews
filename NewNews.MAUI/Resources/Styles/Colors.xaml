@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Primära färger - Djup blå ton för professionell nyhetskänsla -->
-    <Color x:Key="Primary">#1E3A8A</Color>
+    <Color x:Key="Primary">#af1917</Color>
     <!-- Djup blå -->
     <Color x:Key="PrimaryDark">#BFC9D1</Color>
     <!-- Ljusare blå för mörkt läge -->
@@ -12,45 +12,33 @@
     <!-- Ljus accent blå -->
 
     <!-- Sekundära färger - Varm orange för kontrast -->
-    <Color x:Key="Secondary">#FF9B51</Color>
+    <Color x:Key="Secondary">white</Color>
     <!-- Amber/Orange -->
-    <Color x:Key="SecondaryDark">#FAB95B</Color>
+    <Color x:Key="SecondaryDark">white</Color>
     <!-- Mörkare orange -->
-
-    <!-- Accent färger -->
-    <Color x:Key="Accent">#10B981</Color>
-    <!-- Grön för framgång -->
-    <Color x:Key="Danger">#EF4444</Color>
-    <!-- Röd för varningar -->
 
     <!-- Neutrala färger - Light mode -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
-    <Color x:Key="OffWhite">#F8FAFC</Color>
-    <Color x:Key="LightGray">#F1F5F9</Color>
 
     <!-- Neutrala färger - Dark mode -->
     <Color x:Key="OffBlack">#0F172A</Color>
     <Color x:Key="DarkGray">#1E293B</Color>
 
     <!-- Gråskala -->
-    <Color x:Key="Gray50">#F8FAFC</Color>
-    <Color x:Key="Gray100">#F1F5F9</Color>
     <Color x:Key="Gray200">#E2E8F0</Color>
     <Color x:Key="Gray300">#CBD5E1</Color>
     <Color x:Key="Gray400">#94A3B8</Color>
     <Color x:Key="Gray500">#64748B</Color>
     <Color x:Key="Gray600">#475569</Color>
     <Color x:Key="Gray700">#334155</Color>
-    <Color x:Key="Gray800">#1E293B</Color>
+    <Color x:Key="Gray800">#af1917</Color>
     <Color x:Key="Gray900">#0F172A</Color>
     <Color x:Key="Gray950">#020617</Color>
 
     <!-- Text färger -->
     <Color x:Key="TextPrimary">#0F172A</Color>
-    <Color x:Key="TextSecondary">#475569</Color>
     <Color x:Key="TextPrimaryDark">#F1F5F9</Color>
-    <Color x:Key="TextSecondaryDark">#94A3B8</Color>
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>

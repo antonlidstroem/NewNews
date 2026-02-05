@@ -4,8 +4,13 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:NewNews.MAUI"
-    Title="NewNews.MAUI">
-
+    Title="NewNews.MAUI"
+    
+    Shell.BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+    Shell.ForegroundColor="{StaticResource TextPrimary}"
+    Shell.TitleColor="{StaticResource TextPrimary}"
+    Shell.NavBarHasShadow="False">
+    
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"

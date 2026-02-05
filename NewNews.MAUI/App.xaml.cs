@@ -7,6 +7,7 @@ namespace NewNews.MAUI
         public App()
         {
             InitializeComponent();
+            //UserAppTheme = AppTheme.Dark;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
