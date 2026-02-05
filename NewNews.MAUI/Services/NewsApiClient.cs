@@ -170,7 +170,7 @@ namespace NewNews.MAUI.Services
                 "no" => "no",
                 "pt" => "pt",
                 "ru" => "ru",
-                _ => "se" // Default till Sverige
+                _ => "se"
             };
         }
     }

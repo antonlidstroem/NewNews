@@ -55,7 +55,8 @@ namespace NewNews.MAUI
             // Registrera Services
             builder.Services.AddSingleton<IBrowserService, BrowserService>();
             builder.Services.AddSingleton<INewsService, NewsService>();
-       
+            builder.Services.AddSingleton<INewsCacheService, NewsCacheService>();
+
 
             // Registrera MainViewModel som singleton
             builder.Services.AddSingleton<MainViewModel>();

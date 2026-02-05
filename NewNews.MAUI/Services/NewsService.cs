@@ -78,7 +78,7 @@ namespace NewNews.MAUI.Services
                 return new List<News>();
             }
         }
-
+        
         public async Task<List<SourceDto>> GetSourcesAsync()
         {
             try

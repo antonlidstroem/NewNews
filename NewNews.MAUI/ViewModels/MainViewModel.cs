@@ -3,7 +3,6 @@ using NewNews.DAL.Services;
 using NewNews.MAUI.Services;
 using NewNews.MAUI.ViewModels.Base;
 
-
 namespace NewNews.MAUI.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
@@ -17,51 +16,27 @@ namespace NewNews.MAUI.ViewModels
         public SavedSearchViewModel SavedSearchVM { get; }
         public UiStateViewModel UiStateVM { get; }
 
-        public MainViewModel(INewsService newsService,
-                             ISearchKeywordService keywordService,
-                             IBrowserService browserService)
+        public MainViewModel(
+            INewsService newsService,
+            ISearchKeywordService keywordService,
+            IBrowserService browserService,
+            INewsCacheService cacheService)
         {
             _keywordService = keywordService;
 
             LanguageVM = new LanguageViewModel(_query);
             SourceVM = new SourceViewModel(newsService, _query);
-            NewsVM = new NewsViewModel(newsService, browserService, _query);
+            NewsVM = new NewsViewModel(newsService, browserService, _query, cacheService);
             SavedSearchVM = new SavedSearchViewModel(_keywordService, NewsVM, LanguageVM, _query);
             UiStateVM = new UiStateViewModel(LanguageVM, SourceVM, SavedSearchVM);
 
-            //_ = SavedSearchVM.LoadSavedKeywords();
-
-            // Lyssna på språkändringar
-            //LanguageVM.PropertyChanged += async (s, e) =>
-            //{
-            //    if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
-            //    {
-            //        // Filtrera källor baserat på nytt språk
-            //        SourceVM.FilterSourcesByLanguage(LanguageVM.CurrentLanguageCode);
-
-            //        NewsVM.ClearCache();
-            //        await NewsVM.SearchNews();
-            //    }
-            //};
-
-            // Lyssna på källändringar
-            //SourceVM.PropertyChanged += async (s, e) =>
-            //{
-            //    if (e.PropertyName == nameof(SourceVM.SelectedSource))
-            //    {
-            //        NewsVM.ClearCache();
-            //        await NewsVM.SearchNews();
-            //    }
-            //};
             LanguageVM.PropertyChanged += OnLanguageChanged;
             SourceVM.PropertyChanged += OnSourceChanged;
-
-
         }
 
         public async Task InitializeAsync()
         {
-            await _keywordService.InitAsync(); 
+            await _keywordService.InitAsync();
             await SavedSearchVM.LoadSavedKeywords();
             await NewsVM.InitializeAsync();
         }
@@ -71,7 +46,6 @@ namespace NewNews.MAUI.ViewModels
             if (e.PropertyName == nameof(LanguageVM.SelectedLanguage))
             {
                 SourceVM.FilterSourcesByLanguage(LanguageVM.CurrentLanguageCode);
-
                 NewsVM.ClearCache();
                 await NewsVM.SearchNews();
             }
@@ -85,7 +59,5 @@ namespace NewNews.MAUI.ViewModels
                 await NewsVM.SearchNews();
             }
         }
-
-
     }
 }

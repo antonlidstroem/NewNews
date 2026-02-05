@@ -12,8 +12,7 @@ namespace NewNews.MAUI.ViewModels
         private readonly INewsService _newsService;
         private readonly IBrowserService _browser;
         private readonly NewsQueryViewModel _query;
-
-        private readonly Dictionary<string, List<News>> _cache = new();
+        private readonly INewsCacheService _cache;
 
         public ObservableCollection<ArticleViewModel> Articles { get; } = new();
 
@@ -28,11 +27,13 @@ namespace NewNews.MAUI.ViewModels
         public NewsViewModel(
             INewsService newsService,
             IBrowserService browser,
-            NewsQueryViewModel query)
+            NewsQueryViewModel query,
+            INewsCacheService cache)
         {
             _newsService = newsService;
             _browser = browser;
             _query = query;
+            _cache = cache;
         }
 
         public async Task InitializeAsync()
@@ -48,7 +49,6 @@ namespace NewNews.MAUI.ViewModels
             System.Diagnostics.Debug.WriteLine($"Toggled endpoint to: {SelectedEndpoint}");
         }
 
-        // Search news articles based on the current query and endpoint
         [RelayCommand]
         public async Task SearchNews()
         {
@@ -59,23 +59,19 @@ namespace NewNews.MAUI.ViewModels
             Articles.Clear();
             currentPage = 1;
             hasMoreItems = true;
-            _cache.Clear();
+            _cache.ClearExpired(); // Rensa utgången cache vid ny sökning
 
             await LoadMoreNews();
         }
 
-        // Load more news articles with pagination
-
         [RelayCommand]
         public async Task LoadMoreNews()
         {
-
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 System.Diagnostics.Debug.WriteLine("No internet connection");
                 return;
             }
-
 
             if (IsBusy || !hasMoreItems) return;
 
@@ -84,21 +80,25 @@ namespace NewNews.MAUI.ViewModels
                 IsBusy = true;
                 System.Diagnostics.Debug.WriteLine($"Loading page {currentPage}...");
 
-                var cacheKey = GenerateCacheKey(currentPage);
+                var query = SelectedEndpoint == "everything"
+                    ? (string.IsNullOrWhiteSpace(SearchQuery) ? "nyheter" : SearchQuery)
+                    : null;
+
+                var cacheKey = _cache.GenerateCacheKey(
+                    SelectedEndpoint,
+                    query,
+                    _query.LanguageCode,
+                    _query.SourceId,
+                    currentPage);
+
                 List<News> news;
 
-                if (_cache.TryGetValue(cacheKey, out var cachedNews))
+                if (_cache.TryGet(cacheKey, out var cachedNews))
                 {
                     news = cachedNews;
-                    System.Diagnostics.Debug.WriteLine($"Using cached data: {news.Count} articles");
                 }
                 else
                 {
-                    var query = SelectedEndpoint == "everything"
-                        ? (string.IsNullOrWhiteSpace(SearchQuery) ? "nyheter" : SearchQuery)
-                        : null;
-
-
                     System.Diagnostics.Debug.WriteLine($"API Call - Query: '{query}', Language: '{_query.LanguageCode}', Source: '{_query.SourceId}', Endpoint: '{SelectedEndpoint}'");
 
                     news = await _newsService.GetNewsPageAsync(
@@ -111,8 +111,7 @@ namespace NewNews.MAUI.ViewModels
 
                     if (news != null && news.Count > 0)
                     {
-                        _cache[cacheKey] = news;
-                        System.Diagnostics.Debug.WriteLine($"Cached {news.Count} articles");
+                        _cache.Set(cacheKey, news);
                     }
                 }
 
@@ -148,23 +147,12 @@ namespace NewNews.MAUI.ViewModels
             }
         }
 
-        // Generate a unique cache key based on query parameters
-        private string GenerateCacheKey(int page)
-        {
-            var query = SearchQuery ?? "default";
-            var language = _query.LanguageCode ?? "none";
-            var source = _query.SourceId ?? "none";
-            return $"{SelectedEndpoint}_{query}_{language}_{source}_{page}";
-        }
-
-        // Open URL in external browser
         [RelayCommand]
         private async Task OpenInBrowser(string? url)
         {
             if (!string.IsNullOrWhiteSpace(url))
                 await _browser.OpenAsync(url);
         }
-
 
         [RelayCommand]
         private void ClearSearch()
@@ -184,7 +172,6 @@ namespace NewNews.MAUI.ViewModels
             _ = SearchNews();
         }
 
-        // Navigate to ArticleWebViewPage
         [RelayCommand]
         private async Task OpenArticle(string? url)
         {
@@ -196,11 +183,9 @@ namespace NewNews.MAUI.ViewModels
             );
         }
 
-        // Clear the entire cache
         public void ClearCache()
         {
             _cache.Clear();
-            System.Diagnostics.Debug.WriteLine("Cache cleared");
         }
     }
 }
